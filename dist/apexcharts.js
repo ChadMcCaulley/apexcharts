@@ -1,5 +1,5 @@
 /*!
- * ApexCharts v3.35.4
+ * ApexCharts v3.35.5
  * (c) 2018-2022 ApexCharts
  * Released under the MIT License.
  */
@@ -10549,16 +10549,23 @@
         var _this3 = this;
 
         var series = _ref2.series,
+            fileName = _ref2.fileName,
             _ref2$columnDelimiter = _ref2.columnDelimiter,
             columnDelimiter = _ref2$columnDelimiter === void 0 ? ',' : _ref2$columnDelimiter,
             _ref2$lineDelimiter = _ref2.lineDelimiter,
-            lineDelimiter = _ref2$lineDelimiter === void 0 ? '\n' : _ref2$lineDelimiter;
+            lineDelimiter = _ref2$lineDelimiter === void 0 ? '\n' : _ref2$lineDelimiter,
+            _ref2$reportTitleRows = _ref2.reportTitleRows,
+            reportTitleRows = _ref2$reportTitleRows === void 0 ? [] : _ref2$reportTitleRows;
         var w = this.w;
         if (!series) series = w.config.series;
         var columns = [];
         var rows = [];
         var result = '';
         var universalBOM = "\uFEFF";
+
+        if (reportTitleRows && reportTitleRows.length > 0) {
+          rows = rows.concat(reportTitleRows);
+        }
 
         var isTimeStamp = function isTimeStamp(num) {
           return w.config.xaxis.type === 'datetime' && String(num).length >= 10;
@@ -10668,13 +10675,30 @@
         };
 
         columns.push(w.config.chart.toolbar.export.csv.headerCategory);
-        series.map(function (s, sI) {
-          var sname = s.name ? s.name : "series-".concat(sI);
 
-          if (w.globals.axisCharts) {
-            columns.push(sname.split(columnDelimiter).join('') ? sname.split(columnDelimiter).join('') : "series-".concat(sI));
-          }
-        });
+        if (w.config.chart.type === 'boxPlot') {
+          columns.push('minimum');
+          columns.push('q1');
+          columns.push('median');
+          columns.push('q3');
+          columns.push('maximum');
+        } else if (w.config.chart.type === 'candlestick') {
+          columns.push('open');
+          columns.push('high');
+          columns.push('low');
+          columns.push('close');
+        } else if (w.config.chart.type === 'rangeBar') {
+          columns.push('minimum');
+          columns.push('maximum');
+        } else {
+          series.map(function (s, sI) {
+            var sname = s.name ? s.name : "series-".concat(sI);
+
+            if (w.globals.axisCharts) {
+              columns.push(sname.split(columnDelimiter).join('') ? sname.split(columnDelimiter).join('') : "series-".concat(sI));
+            }
+          });
+        }
 
         if (!w.globals.axisCharts) {
           columns.push(w.config.chart.toolbar.export.csv.headerValue);
@@ -10692,7 +10716,7 @@
           }
         });
         result += rows.join(lineDelimiter);
-        this.triggerDownload('data:text/csv; charset=utf-8,' + encodeURIComponent(universalBOM + result), w.config.chart.toolbar.export.csv.filename, '.csv');
+        this.triggerDownload('data:text/csv; charset=utf-8,' + encodeURIComponent(universalBOM + result), fileName ? fileName : w.config.chart.toolbar.export.csv.filename, '.csv');
       }
     }, {
       key: "triggerDownload",
@@ -25140,6 +25164,7 @@
           }
 
           if (overwriteInitialSeries) {
+            w.globals.initialConfig.series = Utils$1.clone(w.config.series);
             w.globals.initialSeries = Utils$1.clone(w.config.series);
           }
 

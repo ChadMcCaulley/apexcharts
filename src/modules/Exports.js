@@ -187,7 +187,8 @@ class Exports {
     series,
     fileName,
     columnDelimiter = ',',
-    lineDelimiter = '\n'
+    lineDelimiter = '\n',
+    reportTitleRows = []
   }) {
     const w = this.w
 
@@ -197,6 +198,10 @@ class Exports {
     let rows = []
     let result = ''
     let universalBOM = '\uFEFF'
+
+    if (reportTitleRows && reportTitleRows.length > 0) {
+      rows = rows.concat(reportTitleRows)
+    }
 
     const isTimeStamp = (num) => {
       return w.config.xaxis.type === 'datetime' && String(num).length >= 10
@@ -278,8 +283,8 @@ class Exports {
               isTimeStamp(cat)
                 ? w.config.chart.toolbar.export.csv.dateFormatter(cat)
                 : Utils.isNumber(cat)
-                ? cat
-                : cat.split(columnDelimiter).join('')
+                  ? cat
+                  : cat.split(columnDelimiter).join('')
             )
 
             for (let ci = 0; ci < w.globals.series.length; ci++) {
@@ -376,7 +381,7 @@ class Exports {
 
     this.triggerDownload(
       'data:text/csv; charset=utf-8,' +
-        encodeURIComponent(universalBOM + result),
+      encodeURIComponent(universalBOM + result),
       fileName ? fileName : w.config.chart.toolbar.export.csv.filename,
       '.csv'
     )
