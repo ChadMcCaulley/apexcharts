@@ -1,6 +1,6 @@
 /*!
- * ApexCharts v3.35.5
- * (c) 2018-2022 ApexCharts
+ * ApexCharts v3.35.6
+ * (c) 2018-2023 ApexCharts
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -5299,9 +5299,12 @@
         if (!w.globals.zoomed) {
           x = correctedLabels.x;
           y = correctedLabels.y;
-        }
+        } //  F-10902 - multi-series - the first and last bar chart were missing a data point
 
-        if (correctedLabels.textRects) {
+
+        var configAlwaysShowTextLabel = dataLabelsConfig && dataLabelsConfig.alwaysShowTextLabel;
+
+        if (correctedLabels.textRects && !configAlwaysShowTextLabel) {
           // fixes #2264
           if (x < -10 - correctedLabels.textRects.width || x > w.globals.gridWidth + correctedLabels.textRects.width + 10) {
             // datalabels fall outside drawing area, so draw a blank label
@@ -10556,6 +10559,8 @@
             lineDelimiter = _ref2$lineDelimiter === void 0 ? '\n' : _ref2$lineDelimiter,
             _ref2$reportTitleRows = _ref2.reportTitleRows,
             reportTitleRows = _ref2$reportTitleRows === void 0 ? [] : _ref2$reportTitleRows;
+            _ref2.useColumns;
+            _ref2.useRows;
         var w = this.w;
         if (!series) series = w.config.series;
         var columns = [];

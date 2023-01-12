@@ -47,8 +47,8 @@ class DataLabels {
     let lastDrawnIndex =
       typeof w.globals.lastDrawnDataLabelsIndexes[i] !== 'undefined'
         ? w.globals.lastDrawnDataLabelsIndexes[i][
-            w.globals.lastDrawnDataLabelsIndexes[i].length - 1
-          ]
+        w.globals.lastDrawnDataLabelsIndexes[i].length - 1
+        ]
         : 0
 
     if (typeof w.globals.dataLabelsRects[i][len] !== 'undefined') {
@@ -205,7 +205,9 @@ class DataLabels {
       y = correctedLabels.y
     }
 
-    if (correctedLabels.textRects) {
+    //  F-10902 - multi-series - the first and last bar chart were missing a data point
+    const configAlwaysShowTextLabel = dataLabelsConfig && dataLabelsConfig.alwaysShowTextLabel;
+    if (correctedLabels.textRects && !configAlwaysShowTextLabel) {
       // fixes #2264
       if (
         x < -10 - correctedLabels.textRects.width ||

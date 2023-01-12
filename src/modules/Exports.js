@@ -188,7 +188,9 @@ class Exports {
     fileName,
     columnDelimiter = ',',
     lineDelimiter = '\n',
-    reportTitleRows = []
+    reportTitleRows = [],
+    useColumns = [],
+    useRows = []
   }) {
     const w = this.w
 
