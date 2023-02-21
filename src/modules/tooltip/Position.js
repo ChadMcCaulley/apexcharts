@@ -202,10 +202,6 @@ export default class Position {
         if (tooltipRect.ttHeight / 2 + y > w.globals.gridHeight) {
           y = w.globals.gridHeight - tooltipRect.ttHeight + w.globals.translateY
         }
-
-        if (y < 0) {
-          y = 0
-        }
       }
     }
 
@@ -295,7 +291,12 @@ export default class Position {
     let pointsArr = w.globals.pointsArray
 
     let series = new Series(this.ctx)
-    activeSeries = series.getActiveConfigSeriesIndex(true)
+    activeSeries = series.getActiveConfigSeriesIndex('asc', [
+      'line',
+      'area',
+      'scatter',
+      'bubble'
+    ])
 
     let hoverSize = ttCtx.tooltipUtil.getHoverMarkerSize(activeSeries)
 
@@ -319,8 +320,16 @@ export default class Position {
         }
         if (pointArr && pointArr.length) {
           let pcy = pointsArr[p][j][1]
+          let pcy2
           points[p].setAttribute('cx', cx)
 
+          if (w.config.chart.type === 'rangeArea' && !w.globals.comboCharts) {
+            const rangeStartIndex = j + w.globals.series[p].length
+            pcy2 = pointsArr[p][rangeStartIndex][1]
+            const pcyDiff = Math.abs(pcy - pcy2) / 2
+
+            pcy = pcy - pcyDiff
+          }
           if (
             pcy !== null &&
             !isNaN(pcy) &&
@@ -359,7 +368,7 @@ export default class Position {
 
     if (w.globals.isBarHorizontal) {
       let series = new Series(this.ctx)
-      i = series.getActiveConfigSeriesIndex(false, 'desc') + 1
+      i = series.getActiveConfigSeriesIndex('desc') + 1
     }
     let jBar = w.globals.dom.baseEl.querySelector(
       `.apexcharts-bar-series .apexcharts-series[rel='${i}'] path[j='${j}'], .apexcharts-candlestick-series .apexcharts-series[rel='${i}'] path[j='${j}'], .apexcharts-boxPlot-series .apexcharts-series[rel='${i}'] path[j='${j}'], .apexcharts-rangebar-series .apexcharts-series[rel='${i}'] path[j='${j}']`
@@ -368,7 +377,6 @@ export default class Position {
     let bcx = jBar ? parseFloat(jBar.getAttribute('cx')) : 0
     let bcy = jBar ? parseFloat(jBar.getAttribute('cy')) : 0
     let bw = jBar ? parseFloat(jBar.getAttribute('barWidth')) : 0
-    let bh = jBar ? parseFloat(jBar.getAttribute('barHeight')) : 0
 
     const elGrid = ttCtx.getElGrid()
     let seriesBound = elGrid.getBoundingClientRect()
@@ -407,19 +415,7 @@ export default class Position {
         }
       }
     } else {
-      if (bcy > w.globals.gridHeight / 2) {
-        bcy = bcy - ttCtx.tooltipRect.ttHeight
-      }
-
-      bcy = bcy + w.config.grid.padding.top + bh / 3
-
-      if (bcy + bh > w.globals.gridHeight) {
-        bcy = w.globals.gridHeight - bh
-      }
-    }
-
-    if (bcy < -10) {
-      bcy = -10
+      bcy = bcy - ttCtx.tooltipRect.ttHeight
     }
 
     if (!w.globals.isBarHorizontal) {

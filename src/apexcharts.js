@@ -257,9 +257,6 @@ export default class ApexCharts {
       } else if (graphData === null || w.globals.allSeriesCollapsed) {
         me.series.handleNoData()
       }
-      if (w.config.chart.type !== 'treemap') {
-        me.axes.drawAxis(w.config.chart.type, graphData.xyRatios)
-      }
 
       me.grid = new Grid(me)
       let elgrid = me.grid.drawGrid()
@@ -270,24 +267,9 @@ export default class ApexCharts {
 
       if (w.config.grid.position === 'back' && elgrid) {
         w.globals.dom.elGraphical.add(elgrid.el)
-      }
-
-      let xAxis = new XAxis(this.ctx)
-      let yaxis = new YAxis(this.ctx)
-      if (elgrid !== null) {
-        xAxis.xAxisLabelCorrections(elgrid.xAxisTickWidth)
-        yaxis.setYAxisTextAlignments()
-
-        w.config.yaxis.map((yaxe, index) => {
-          if (w.globals.ignoreYAxisIndexes.indexOf(index) === -1) {
-            yaxis.yAxisTitleRotate(index, yaxe.opposite)
-          }
-        })
-      }
-
-      if (w.config.annotations.position === 'back') {
-        w.globals.dom.Paper.add(w.globals.dom.elAnnotations)
-        me.annotations.drawAxesAnnotations()
+        if (elgrid && elgrid.elGridBorders && elgrid.elGridBorders.node) {
+          w.globals.dom.elGraphical.add(elgrid.elGridBorders)
+        }
       }
 
       if (Array.isArray(graphData.elGraph)) {
@@ -300,6 +282,9 @@ export default class ApexCharts {
 
       if (w.config.grid.position === 'front' && elgrid) {
         w.globals.dom.elGraphical.add(elgrid.el)
+        if (elgrid && elgrid.elGridBorders && elgrid.elGridBorders.node) {
+          w.globals.dom.elGraphical.add(elgrid.elGridBorders)
+        }
       }
 
       if (w.config.xaxis.crosshairs.position === 'front') {
@@ -310,10 +295,25 @@ export default class ApexCharts {
         me.crosshairs.drawYCrosshairs()
       }
 
-      if (w.config.annotations.position === 'front') {
-        w.globals.dom.Paper.add(w.globals.dom.elAnnotations)
-        me.annotations.drawAxesAnnotations()
+      if (w.config.chart.type !== 'treemap') {
+        me.axes.drawAxis(w.config.chart.type, elgrid)
       }
+
+      let xAxis = new XAxis(this.ctx, elgrid)
+      let yaxis = new YAxis(this.ctx, elgrid)
+      if (elgrid !== null) {
+        xAxis.xAxisLabelCorrections(elgrid.xAxisTickWidth)
+        yaxis.setYAxisTextAlignments()
+
+        w.config.yaxis.map((yaxe, index) => {
+          if (w.globals.ignoreYAxisIndexes.indexOf(index) === -1) {
+            yaxis.yAxisTitleRotate(index, yaxe.opposite)
+          }
+        })
+      }
+
+      w.globals.dom.Paper.add(w.globals.dom.elAnnotations)
+      me.annotations.drawAxesAnnotations()
 
       if (!w.globals.noData) {
         // draw tooltips at the end
