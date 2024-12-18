@@ -5,10 +5,9 @@
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-      (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.ApexCharts = factory());
-})(this, (function () {
-  'use strict';
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.ApexCharts = factory());
+})(this, (function () { 'use strict';
 
   function _arrayLikeToArray(r, a) {
     (null == a || a > r.length) && (a = r.length);
@@ -45,7 +44,7 @@
       if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) {
         t && (r = t);
         var n = 0,
-          F = function () { };
+          F = function () {};
         return {
           s: F,
           n: function () {
@@ -126,8 +125,8 @@
   }
   function _isNativeReflectConstruct() {
     try {
-      var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () { }));
-    } catch (t) { }
+      var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+    } catch (t) {}
     return (_isNativeReflectConstruct = function () {
       return !!t;
     })();
@@ -372,28 +371,32 @@
     }, {
       key: "clone",
       value: function clone(source) {
-        if (Utils.is('Array', source)) {
-          var cloneResult = [];
-          for (var i = 0; i < source.length; i++) {
-            cloneResult[i] = this.clone(source[i]);
-          }
-          return cloneResult;
-        } else if (Utils.is('Null', source)) {
-          // fixes an issue where null values were converted to {}
-          return null;
-        } else if (Utils.is('Date', source)) {
-          return source;
-        } else if (_typeof(source) === 'object') {
-          var _cloneResult = {};
-          for (var prop in source) {
-            if (source.hasOwnProperty(prop)) {
-              _cloneResult[prop] = this.clone(source[prop]);
-            }
-          }
-          return _cloneResult;
-        } else {
+        var visited = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakMap();
+        if (source === null || _typeof(source) !== 'object') {
           return source;
         }
+        if (visited.has(source)) {
+          return visited.get(source);
+        }
+        var cloneResult;
+        if (Array.isArray(source)) {
+          cloneResult = [];
+          visited.set(source, cloneResult);
+          for (var i = 0; i < source.length; i++) {
+            cloneResult[i] = this.clone(source[i], visited);
+          }
+        } else if (source instanceof Date) {
+          cloneResult = new Date(source.getTime());
+        } else {
+          cloneResult = {};
+          visited.set(source, cloneResult);
+          for (var prop in source) {
+            if (source.hasOwnProperty(prop)) {
+              cloneResult[prop] = this.clone(source[prop], visited);
+            }
+          }
+        }
+        return cloneResult;
       }
     }, {
       key: "log10",
@@ -919,7 +922,7 @@
 
     // Then check if origin was used and overwrite in that case
     if (origin != null) {
-      [ox, oy] = Array.isArray(origin)
+  [ox, oy] = Array.isArray(origin)
         ? origin
         : typeof origin === 'object'
           ? [origin.x, origin.y]
@@ -1504,14 +1507,14 @@
   function sixDigitHex(hex) {
     return hex.length === 4
       ? [
-        '#',
-        hex.substring(1, 2),
-        hex.substring(1, 2),
-        hex.substring(2, 3),
-        hex.substring(2, 3),
-        hex.substring(3, 4),
-        hex.substring(3, 4)
-      ].join('')
+          '#',
+          hex.substring(1, 2),
+          hex.substring(1, 2),
+          hex.substring(2, 3),
+          hex.substring(2, 3),
+          hex.substring(3, 4),
+          hex.substring(3, 4)
+        ].join('')
       : hex
   }
 
@@ -1523,7 +1526,7 @@
   }
 
   function is(object, space) {
-    for (let i = space.length; i--;) {
+    for (let i = space.length; i--; ) {
       if (object[space[i]] == null) {
         return false
       }
@@ -2237,7 +2240,7 @@
 
       // ensure source as object
       source =
-        source instanceof Element
+        source instanceof Element$1
           ? source.matrixify()
           : typeof source === 'string'
             ? Matrix.fromArray(source.split(delimiter).map(parseFloat))
@@ -2613,11 +2616,11 @@
             ? source
             : typeof source === 'object'
               ? [
-                source.left != null ? source.left : source.x,
-                source.top != null ? source.top : source.y,
-                source.width,
-                source.height
-              ]
+                  source.left != null ? source.left : source.x,
+                  source.top != null ? source.top : source.y,
+                  source.width,
+                  source.height
+                ]
               : arguments.length === 4
                 ? [].slice.call(arguments)
                 : base;
@@ -2722,8 +2725,9 @@
       } catch (e) {
         // We give up...
         throw new Error(
-          `Getting bbox of element "${el.node.nodeName
-          }" is not possible: ${e.toString()}`
+          `Getting bbox of element "${
+          el.node.nodeName
+        }" is not possible: ${e.toString()}`
         )
       }
     };
@@ -3046,7 +3050,7 @@
   }
 
   class EventTarget extends Base$1 {
-    addEventListener() { }
+    addEventListener() {}
 
     dispatch(event, data, options) {
       return dispatch(this, event, data, options)
@@ -3093,12 +3097,12 @@
       return this
     }
 
-    removeEventListener() { }
+    removeEventListener() {}
   }
 
   register(EventTarget, 'EventTarget');
 
-  function noop() { }
+  function noop() {}
 
   // Default animation values
   const timeline = {
@@ -3709,7 +3713,7 @@
       well.innerHTML = xmlOrFn;
 
       // Transplant nodes into the fragment
-      for (let len = well.children.length; len--;) {
+      for (let len = well.children.length; len--; ) {
         fragment.appendChild(well.firstElementChild);
       }
 
@@ -3723,7 +3727,7 @@
   extend(Dom, { attr, find, findOne });
   register(Dom, 'Dom');
 
-  class Element extends Dom {
+  let Element$1 = class Element extends Dom {
     constructor(node, attrs) {
       super(node, attrs);
 
@@ -3737,8 +3741,8 @@
         // pull svgjs data from the dom (getAttributeNS doesn't work in html5)
         this.setData(
           JSON.parse(node.getAttribute('data-svgjs')) ??
-          JSON.parse(node.getAttribute('svgjs:data')) ??
-          {}
+            JSON.parse(node.getAttribute('svgjs:data')) ??
+            {}
         );
       }
     }
@@ -3876,9 +3880,9 @@
     y(y) {
       return this.attr('y', y)
     }
-  }
+  };
 
-  extend(Element, {
+  extend(Element$1, {
     bbox,
     rbox,
     inside,
@@ -3887,7 +3891,7 @@
     screenCTM
   });
 
-  register(Element, 'Element');
+  register(Element$1, 'Element');
 
   // Define list of available attributes for stroke and fill
   const sugar = {
@@ -3907,36 +3911,36 @@
     }
   }
 
-    // Add sugar for fill and stroke
-    ;['fill', 'stroke'].forEach(function (m) {
-      const extension = {};
-      let i;
+  // Add sugar for fill and stroke
+  ;['fill', 'stroke'].forEach(function (m) {
+    const extension = {};
+    let i;
 
-      extension[m] = function (o) {
-        if (typeof o === 'undefined') {
-          return this.attr(m)
-        }
-        if (
-          typeof o === 'string' ||
-          o instanceof Color ||
-          Color.isRgb(o) ||
-          o instanceof Element
-        ) {
-          this.attr(m, o);
-        } else {
-          // set all attributes from sugar.fill and sugar.stroke list
-          for (i = sugar[m].length - 1; i >= 0; i--) {
-            if (o[sugar[m][i]] != null) {
-              this.attr(sugar.prefix(m, sugar[m][i]), o[sugar[m][i]]);
-            }
+    extension[m] = function (o) {
+      if (typeof o === 'undefined') {
+        return this.attr(m)
+      }
+      if (
+        typeof o === 'string' ||
+        o instanceof Color ||
+        Color.isRgb(o) ||
+        o instanceof Element$1
+      ) {
+        this.attr(m, o);
+      } else {
+        // set all attributes from sugar.fill and sugar.stroke list
+        for (i = sugar[m].length - 1; i >= 0; i--) {
+          if (o[sugar[m][i]] != null) {
+            this.attr(sugar.prefix(m, sugar[m][i]), o[sugar[m][i]]);
           }
         }
+      }
 
-        return this
-      };
+      return this
+    };
 
-      registerMethods(['Element', 'Runner'], extension);
-    });
+    registerMethods(['Element', 'Runner'], extension);
+  });
 
   registerMethods(['Element', 'Runner'], {
     // Let the user set the matrix directly
@@ -4033,11 +4037,11 @@
         : a === 'anchor'
           ? this.attr('text-anchor', v)
           : a === 'size' ||
-            a === 'family' ||
-            a === 'weight' ||
-            a === 'stretch' ||
-            a === 'variant' ||
-            a === 'style'
+              a === 'family' ||
+              a === 'weight' ||
+              a === 'stretch' ||
+              a === 'variant' ||
+              a === 'style'
             ? this.attr('font-' + a, v)
             : this.attr(a, v)
     }
@@ -4162,7 +4166,7 @@
     transform
   });
 
-  class Container extends Element {
+  class Container extends Element$1 {
     flatten() {
       this.each(function () {
         if (this instanceof Container) {
@@ -4204,7 +4208,7 @@
 
   register(Defs, 'Defs');
 
-  class Shape extends Element { }
+  class Shape extends Element$1 {}
 
   register(Shape, 'Shape');
 
@@ -4647,7 +4651,7 @@
         m = new Matrix(m);
       }
 
-      for (let i = this.length; i--;) {
+      for (let i = this.length; i--; ) {
         // Perform the matrix multiplication
         const [x, y] = this[i];
         this[i][0] = m.a * x + m.c * y + m.e;
@@ -5157,7 +5161,7 @@
     return (
       parser.segment.length &&
       parser.segment.length - 1 ===
-      segmentParameters[parser.segment[0].toUpperCase()]
+        segmentParameters[parser.segment[0].toUpperCase()]
     )
   }
 
@@ -5672,7 +5676,7 @@
           if (values[i + 1] === Color && other[i + 7] !== values[i + 7]) {
             const space = other[i + 7];
             const color = new Color(this.values.splice(i + 3, 5))
-            [space]()
+              [space]()
               .toArray();
             this.values.splice(i + 3, 0, ...color);
           }
@@ -5815,9 +5819,9 @@
       return d == null
         ? this.array()
         : this.clear().attr(
-          'd',
-          typeof d === 'string' ? d : (this._array = new PathArray(d))
-        )
+            'd',
+            typeof d === 'string' ? d : (this._array = new PathArray(d))
+          )
     }
 
     // Set element size to given width and height
@@ -5881,9 +5885,9 @@
     return p == null
       ? this.array()
       : this.clear().attr(
-        'points',
-        typeof p === 'string' ? p : (this._array = new PointArray(p))
-      )
+          'points',
+          typeof p === 'string' ? p : (this._array = new PointArray(p))
+        )
   }
 
   // Set element size to given width and height
@@ -6357,7 +6361,7 @@
       // runner always wins the reset even if the other runner started earlier
       // and therefore should win the attribute battle
       // this can be solved by resetting them backwards
-      for (let k = this._runners.length; k--;) {
+      for (let k = this._runners.length; k--; ) {
         // Get and run the current runner and ignore it if its inactive
         const runnerInfo = this._runners[k];
         const runner = runnerInfo.runner;
@@ -6953,7 +6957,7 @@
       this.done = done;
     }
 
-    clearTransformsFromQueue() { }
+    clearTransformsFromQueue() {}
   }
 
   extend([Runner, FakeRunner], {
@@ -8030,7 +8034,7 @@
 
   register(ClipPath, 'ClipPath');
 
-  class ForeignObject extends Element {
+  class ForeignObject extends Element$1 {
     constructor(node, attrs = node) {
       super(nodeOrNew('foreignObject', node), attrs);
     }
@@ -8286,7 +8290,7 @@
 
   register(Mask, 'Mask');
 
-  class Stop extends Element {
+  class Stop extends Element$1 {
     constructor(node, attrs = node) {
       super(nodeOrNew('stop', node), attrs);
     }
@@ -8336,7 +8340,7 @@
     return ret
   }
 
-  class Style extends Element {
+  class Style extends Element$1 {
     constructor(node, attrs = node) {
       super(nodeOrNew('style', node), attrs);
     }
@@ -8510,7 +8514,7 @@
 
   extend(EventTarget, getMethodsFor('EventTarget'));
   extend(Dom, getMethodsFor('Dom'));
-  extend(Element, getMethodsFor('Element'));
+  extend(Element$1, getMethodsFor('Element'));
   extend(Shape, getMethodsFor('Shape'));
   extend([Container, Fragment], getMethodsFor('Container'));
   extend(Gradient, getMethodsFor('Gradient'));
@@ -8532,8 +8536,8 @@
 
   makeMorphable();
 
-  class Filter extends Element {
-    constructor(node) {
+  class Filter extends Element$1 {
+    constructor (node) {
       super(nodeOrNew('filter', node), node);
 
       this.$source = 'SourceGraphic';
@@ -8545,7 +8549,7 @@
       this.$autoSetIn = true;
     }
 
-    put(element, i) {
+    put (element, i) {
       element = super.put(element, i);
 
       if (!element.attr('in') && this.$autoSetIn) {
@@ -8559,7 +8563,7 @@
     }
 
     // Unmask all masked elements and remove itself
-    remove() {
+    remove () {
       // unmask all targets
       this.targets().each('unfilter');
 
@@ -8567,23 +8571,23 @@
       return super.remove()
     }
 
-    targets() {
+    targets () {
       return baseFind('svg [filter*="' + this.id() + '"]')
     }
 
-    toString() {
+    toString () {
       return 'url(#' + this.id() + ')'
     }
   }
 
   // Create Effect class
-  class Effect extends Element {
-    constructor(node, attr) {
+  class Effect extends Element$1 {
+    constructor (node, attr) {
       super(node, attr);
       this.result(this.id());
     }
 
-    in(effect) {
+    in (effect) {
       // Act as getter
       if (effect == null) {
         const _in = this.attr('in');
@@ -8596,12 +8600,12 @@
     }
 
     // Named result
-    result(result) {
+    result (result) {
       return this.attr('result', result)
     }
 
     // Stringification
-    toString() {
+    toString () {
       return this.result()
     }
   }
@@ -8688,13 +8692,13 @@
     const fn = updateFunctions[effect];
 
     Filter[name + 'Effect'] = class extends Effect {
-      constructor(node) {
+      constructor (node) {
         super(nodeOrNew('fe' + name, node), node);
       }
 
       // This function takes all parameters from the factory call
       // and updates the attributes according to the updateFunctions
-      update(args) {
+      update (args) {
         fn.apply(this, args);
         return this
       }
@@ -8721,7 +8725,7 @@
 
   // Correct factories which are not that simple
   extend(Filter, {
-    merge(arrayOrFn) {
+    merge (arrayOrFn) {
       const node = this.put(new Filter.MergeEffect());
 
       // If a function was passed, execute it
@@ -8745,7 +8749,7 @@
 
       return node
     },
-    componentTransfer(components = {}) {
+    componentTransfer (components = {}) {
       const node = this.put(new Filter.ComponentTransferEffect());
 
       if (typeof components === 'function') {
@@ -8784,7 +8788,7 @@
   filterChildNodes.forEach((child) => {
     const name = capitalize(child);
     Filter[name] = class extends Effect {
-      constructor(node) {
+      constructor (node) {
         super(nodeOrNew('fe' + name, node), node);
       }
     };
@@ -8825,7 +8829,7 @@
   });
 
   extend(Filter.MergeEffect, {
-    mergeNode(_in) {
+    mergeNode (_in) {
       return this.put(new Filter.MergeNode()).attr('in', _in)
     }
   });
@@ -8850,7 +8854,7 @@
     }
   });
 
-  extend(Element, {
+  extend(Element$1, {
     // Create filter element in defs and store reference
     filterWith: function (block) {
       const filter = block instanceof Filter
@@ -8864,7 +8868,7 @@
       /* remove filter attribute */
       return this.attr('filter', null)
     },
-    filterer() {
+    filterer () {
       return this.reference('filter')
     }
   });
@@ -10120,28 +10124,28 @@
     _createClass(CoreUtils, [{
       key: "getStackedSeriesTotals",
       value:
-        /**
-         * @memberof CoreUtils
-         * returns the sum of all individual values in a multiple stacked series
-         * Eg. w.globals.series = [[32,33,43,12], [2,3,5,1]]
-         *  @return [34,36,48,13]
-         **/
-        function getStackedSeriesTotals() {
-          var excludedSeriesIndices = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-          var w = this.w;
-          var total = [];
-          if (w.globals.series.length === 0) return total;
-          for (var i = 0; i < w.globals.series[w.globals.maxValsInArrayIndex].length; i++) {
-            var t = 0;
-            for (var j = 0; j < w.globals.series.length; j++) {
-              if (typeof w.globals.series[j][i] !== 'undefined' && excludedSeriesIndices.indexOf(j) === -1) {
-                t += w.globals.series[j][i];
-              }
+      /**
+       * @memberof CoreUtils
+       * returns the sum of all individual values in a multiple stacked series
+       * Eg. w.globals.series = [[32,33,43,12], [2,3,5,1]]
+       *  @return [34,36,48,13]
+       **/
+      function getStackedSeriesTotals() {
+        var excludedSeriesIndices = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+        var w = this.w;
+        var total = [];
+        if (w.globals.series.length === 0) return total;
+        for (var i = 0; i < w.globals.series[w.globals.maxValsInArrayIndex].length; i++) {
+          var t = 0;
+          for (var j = 0; j < w.globals.series.length; j++) {
+            if (typeof w.globals.series[j][i] !== 'undefined' && excludedSeriesIndices.indexOf(j) === -1) {
+              t += w.globals.series[j][i];
             }
-            total.push(t);
           }
-          return total;
+          total.push(t);
         }
+        return total;
+      }
 
       // get total of the all values inside all series
     }, {
@@ -10622,9 +10626,9 @@
         }
         var w = this.w;
         var min_log_val = w.globals.minYArr[seriesIndex] === 0 ? -1 // make sure we dont calculate log of 0
-          : this.getBaseLog(b, w.globals.minYArr[seriesIndex]);
+        : this.getBaseLog(b, w.globals.minYArr[seriesIndex]);
         var max_log_val = w.globals.maxYArr[seriesIndex] === 0 ? 0 // make sure we dont calculate log of 0
-          : this.getBaseLog(b, w.globals.maxYArr[seriesIndex]);
+        : this.getBaseLog(b, w.globals.maxYArr[seriesIndex]);
         var number_of_height_levels = max_log_val - min_log_val;
         if (d < 1) return d / number_of_height_levels;
         var log_height_value = this.getBaseLog(b, d) - min_log_val;
@@ -10663,27 +10667,27 @@
     }, {
       key: "drawSeriesByGroup",
       value:
-        // Series of the same group and type can be stacked together distinct from
-        // other series of the same type on the same axis.
-        function drawSeriesByGroup(typeSeries, typeGroups, type, chartClass) {
-          var w = this.w;
-          var graph = [];
-          if (typeSeries.series.length > 0) {
-            // draw each group separately
-            typeGroups.forEach(function (gn) {
-              var gs = [];
-              var gi = [];
-              typeSeries.i.forEach(function (i, ii) {
-                if (w.config.series[i].group === gn) {
-                  gs.push(typeSeries.series[ii]);
-                  gi.push(i);
-                }
-              });
-              gs.length > 0 && graph.push(chartClass.draw(gs, type, gi));
+      // Series of the same group and type can be stacked together distinct from
+      // other series of the same type on the same axis.
+      function drawSeriesByGroup(typeSeries, typeGroups, type, chartClass) {
+        var w = this.w;
+        var graph = [];
+        if (typeSeries.series.length > 0) {
+          // draw each group separately
+          typeGroups.forEach(function (gn) {
+            var gs = [];
+            var gi = [];
+            typeSeries.i.forEach(function (i, ii) {
+              if (w.config.series[i].group === gn) {
+                gs.push(typeSeries.series[ii]);
+                gi.push(i);
+              }
             });
-          }
-          return graph;
+            gs.length > 0 && graph.push(chartClass.draw(gs, type, gi));
+          });
         }
+        return graph;
+      }
     }], [{
       key: "checkComboSeries",
       value: function checkComboSeries(series, chartType) {
@@ -10946,18 +10950,18 @@
         if (anno.x2 === null || typeof anno.x2 === 'undefined') {
           if (!clipX1) {
             var line = this.annoCtx.graphics.drawLine(x1 + anno.offsetX,
-              // x1
-              0 + anno.offsetY,
-              // y1
-              x1 + anno.offsetX,
-              // x2
-              w.globals.gridHeight + anno.offsetY,
-              // y2
-              anno.borderColor,
-              // lineColor
-              strokeDashArray,
-              //dashArray
-              anno.borderWidth);
+            // x1
+            0 + anno.offsetY,
+            // y1
+            x1 + anno.offsetX,
+            // x2
+            w.globals.gridHeight + anno.offsetY,
+            // y2
+            anno.borderColor,
+            // lineColor
+            strokeDashArray,
+            //dashArray
+            anno.borderWidth);
             parent.appendChild(line.node);
             if (anno.id) {
               line.node.classList.add(anno.id);
@@ -10974,24 +10978,24 @@
               x2 = temp;
             }
             var rect = this.annoCtx.graphics.drawRect(x1 + anno.offsetX,
-              // x1
-              0 + anno.offsetY,
-              // y1
-              x2 - x1,
-              // x2
-              w.globals.gridHeight + anno.offsetY,
-              // y2
-              0,
-              // radius
-              anno.fillColor,
-              // color
-              anno.opacity,
-              // opacity,
-              1,
-              // strokeWidth
-              anno.borderColor,
-              // strokeColor
-              strokeDashArray // stokeDashArray
+            // x1
+            0 + anno.offsetY,
+            // y1
+            x2 - x1,
+            // x2
+            w.globals.gridHeight + anno.offsetY,
+            // y2
+            0,
+            // radius
+            anno.fillColor,
+            // color
+            anno.opacity,
+            // opacity,
+            1,
+            // strokeWidth
+            anno.borderColor,
+            // strokeColor
+            strokeDashArray // stokeDashArray
             );
             rect.node.classList.add('apexcharts-annotation-rect');
             rect.attr('clip-path', "url(#gridRectMask".concat(w.globals.cuid, ")"));
@@ -11657,18 +11661,18 @@
           if (!clipY1) {
             drawn = true;
             var line = this.annoCtx.graphics.drawLine(0 + anno.offsetX,
-              // x1
-              y1 + anno.offsetY,
-              // y1
-              this._getYAxisAnnotationWidth(anno),
-              // x2
-              y1 + anno.offsetY,
-              // y2
-              anno.borderColor,
-              // lineColor
-              strokeDashArray,
-              // dashArray
-              anno.borderWidth);
+            // x1
+            y1 + anno.offsetY,
+            // y1
+            this._getYAxisAnnotationWidth(anno),
+            // x2
+            y1 + anno.offsetY,
+            // y2
+            anno.borderColor,
+            // lineColor
+            strokeDashArray,
+            // dashArray
+            anno.borderWidth);
             parent.appendChild(line.node);
             if (anno.id) {
               line.node.classList.add(anno.id);
@@ -11686,24 +11690,24 @@
           if (!(clipY1 && clipY2)) {
             drawn = true;
             var rect = this.annoCtx.graphics.drawRect(0 + anno.offsetX,
-              // x1
-              y2 + anno.offsetY,
-              // y1
-              this._getYAxisAnnotationWidth(anno),
-              // x2
-              y1 - y2,
-              // y2
-              0,
-              // radius
-              anno.fillColor,
-              // color
-              anno.opacity,
-              // opacity,
-              1,
-              // strokeWidth
-              anno.borderColor,
-              // strokeColor
-              strokeDashArray // stokeDashArray
+            // x1
+            y2 + anno.offsetY,
+            // y1
+            this._getYAxisAnnotationWidth(anno),
+            // x2
+            y1 - y2,
+            // y2
+            0,
+            // radius
+            anno.fillColor,
+            // color
+            anno.opacity,
+            // opacity,
+            1,
+            // strokeWidth
+            anno.borderColor,
+            // strokeColor
+            strokeDashArray // stokeDashArray
             );
             rect.node.classList.add('apexcharts-annotation-rect');
             rect.attr('clip-path', "url(#gridRectMask".concat(w.globals.cuid, ")"));
@@ -11868,68 +11872,68 @@
 
   const name = "en";
   const options = {
-    months: [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ],
-    shortMonths: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ],
-    days: [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
-    ],
-    shortDays: [
-      "Sun",
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat"
-    ],
-    toolbar: {
-      exportToSVG: "Download SVG",
-      exportToPNG: "Download PNG",
-      exportToCSV: "Download CSV",
-      menu: "Menu",
-      selection: "Selection",
-      selectionZoom: "Selection Zoom",
-      zoomIn: "Zoom In",
-      zoomOut: "Zoom Out",
-      pan: "Panning",
-      reset: "Reset Zoom"
-    }
+  	months: [
+  		"January",
+  		"February",
+  		"March",
+  		"April",
+  		"May",
+  		"June",
+  		"July",
+  		"August",
+  		"September",
+  		"October",
+  		"November",
+  		"December"
+  	],
+  	shortMonths: [
+  		"Jan",
+  		"Feb",
+  		"Mar",
+  		"Apr",
+  		"May",
+  		"Jun",
+  		"Jul",
+  		"Aug",
+  		"Sep",
+  		"Oct",
+  		"Nov",
+  		"Dec"
+  	],
+  	days: [
+  		"Sunday",
+  		"Monday",
+  		"Tuesday",
+  		"Wednesday",
+  		"Thursday",
+  		"Friday",
+  		"Saturday"
+  	],
+  	shortDays: [
+  		"Sun",
+  		"Mon",
+  		"Tue",
+  		"Wed",
+  		"Thu",
+  		"Fri",
+  		"Sat"
+  	],
+  	toolbar: {
+  		exportToSVG: "Download SVG",
+  		exportToPNG: "Download PNG",
+  		exportToCSV: "Download CSV",
+  		menu: "Menu",
+  		selection: "Selection",
+  		selectionZoom: "Selection Zoom",
+  		zoomIn: "Zoom In",
+  		zoomOut: "Zoom Out",
+  		pan: "Panning",
+  		reset: "Reset Zoom"
+  	}
   };
   var en = {
-    name: name,
-    options: options
+  	name: name,
+  	options: options
   };
 
   var Options = /*#__PURE__*/function () {
@@ -13813,8 +13817,8 @@
       value: function rangeBar() {
         var handleTimelineTooltip = function handleTimelineTooltip(opts) {
           var _getRangeValues = getRangeValues(_objectSpread2(_objectSpread2({}, opts), {}, {
-            isTimeline: true
-          })),
+              isTimeline: true
+            })),
             color = _getRangeValues.color,
             seriesName = _getRangeValues.seriesName,
             ylabel = _getRangeValues.ylabel,
@@ -13865,7 +13869,7 @@
             enabled: false,
             formatter: function formatter(val, _ref4) {
               _ref4.ctx;
-              var seriesIndex = _ref4.seriesIndex,
+                var seriesIndex = _ref4.seriesIndex,
                 dataPointIndex = _ref4.dataPointIndex,
                 w = _ref4.w;
               var getVal = function getVal() {
@@ -15835,8 +15839,8 @@
         if (typeof w.globals.dataLabelsRects[i][len] !== 'undefined') {
           var lastDataLabelRect = w.globals.dataLabelsRects[i][lastDrawnIndex];
           if (
-            // next label forward and x not intersecting
-            x > lastDataLabelRect.x + lastDataLabelRect.width || y > lastDataLabelRect.y + lastDataLabelRect.height || y + height < lastDataLabelRect.y || x + width < lastDataLabelRect.x // next label is going to be drawn backwards
+          // next label forward and x not intersecting
+          x > lastDataLabelRect.x + lastDataLabelRect.width || y > lastDataLabelRect.y + lastDataLabelRect.height || y + height < lastDataLabelRect.y || x + width < lastDataLabelRect.x // next label is going to be drawn backwards
           ) {
             // the 2 indexes don't override, so OK to draw next label
             drawnextLabel = true;
@@ -15980,7 +15984,10 @@
           x = correctedLabels.x;
           y = correctedLabels.y;
         }
-        if (correctedLabels.textRects) {
+
+        //  F-10902 - multi-series - the first and last bar chart were missing a data point
+        var configAlwaysShowTextLabel = dataLabelsConfig && dataLabelsConfig.alwaysShowTextLabel;
+        if (correctedLabels.textRects && !configAlwaysShowTextLabel) {
           // fixes #2264
           if (x < -20 - correctedLabels.textRects.width || x > w.globals.gridWidth + correctedLabels.textRects.width + 30) {
             // datalabels fall outside drawing area, so draw a blank label
@@ -17355,7 +17362,11 @@
           _ref2$columnDelimiter = _ref2.columnDelimiter,
           columnDelimiter = _ref2$columnDelimiter === void 0 ? ',' : _ref2$columnDelimiter,
           _ref2$lineDelimiter = _ref2.lineDelimiter,
-          lineDelimiter = _ref2$lineDelimiter === void 0 ? '\n' : _ref2$lineDelimiter;
+          lineDelimiter = _ref2$lineDelimiter === void 0 ? '\n' : _ref2$lineDelimiter,
+          _ref2$reportTitleRows = _ref2.reportTitleRows,
+          reportTitleRows = _ref2$reportTitleRows === void 0 ? [] : _ref2$reportTitleRows;
+          _ref2.useColumns;
+          _ref2.useRows;
         var w = this.w;
         if (!series) series = w.config.series;
         var columns = [];
@@ -17365,6 +17376,12 @@
         var gSeries = w.globals.series.map(function (s, i) {
           return w.globals.collapsedSeriesIndices.indexOf(i) === -1 ? s : [];
         });
+        if (reportTitleRows && reportTitleRows.length > 0) {
+          rows = rows.concat(reportTitleRows);
+        }
+        if (reportTitleRows && reportTitleRows.length > 0) {
+          rows = rows.concat(reportTitleRows);
+        }
         var getFormattedCategory = function getFormattedCategory(cat) {
           if (typeof w.config.chart.toolbar.export.csv.categoryFormatter === 'function') {
             return w.config.chart.toolbar.export.csv.categoryFormatter(cat);
@@ -17721,7 +17738,7 @@
         // when all series are collapsed, fixes #3381
         if (dataPoints === 0 && labelsLen > dataPoints) dataPoints = labelsLen;
         if (isXNumeric) {
-          var len = dataPoints > 1 ? dataPoints - 1 : dataPoints;
+          var len = Math.max(Number(w.config.xaxis.tickAmount) || 1, dataPoints > 1 ? dataPoints - 1 : dataPoints);
           colWidth = w.globals.gridWidth / Math.min(len, labelsLen - 1);
           xPos = xPos + colWidthCb(0, colWidth) / 2 + w.config.xaxis.labels.offsetX;
         } else {
@@ -19011,7 +19028,7 @@
           // no data in the chart. Either all series collapsed or user passed a blank array
           gl.xAxisScale = this.linearScale(0, 10, 10);
         } else {
-          var ticks = gl.xTickAmount + 1;
+          var ticks = gl.xTickAmount;
           if (diff < 10 && diff > 1) {
             ticks = diff;
           }
@@ -19252,10 +19269,10 @@
           if (autoScaleYaxis) {
             // Scale the Y axis to the min..max within the possibly zoomed X axis domain.
             if (cnf.xaxis.min) {
-              for (; firstXIndex < lastXIndex && gl.seriesX[i][firstXIndex] < cnf.xaxis.min; firstXIndex++) { }
+              for (; firstXIndex < lastXIndex && gl.seriesX[i][firstXIndex] < cnf.xaxis.min; firstXIndex++) {}
             }
             if (cnf.xaxis.max) {
-              for (; lastXIndex > firstXIndex && gl.seriesX[i][lastXIndex] > cnf.xaxis.max; lastXIndex--) { }
+              for (; lastXIndex > firstXIndex && gl.seriesX[i][lastXIndex] > cnf.xaxis.max; lastXIndex--) {}
             }
           }
           for (var j = firstXIndex; j <= lastXIndex && j < gl.series[i].length; j++) {
@@ -19643,28 +19660,30 @@
         if (gl.isXNumeric) {
           // get the least x diff if numeric x axis is present
           gl.seriesX.forEach(function (sX, i) {
-            if (sX.length === 1) {
-              // a small hack to prevent overlapping multiple bars when there is just 1 datapoint in bar series.
-              // fix #811
-              sX.push(gl.seriesX[gl.maxValsInArrayIndex][gl.seriesX[gl.maxValsInArrayIndex].length - 1]);
-            }
-
-            // fix #983 (clone the array to avoid side effects)
-            var seriesX = sX.slice();
-            seriesX.sort(function (a, b) {
-              return a - b;
-            });
-            seriesX.forEach(function (s, j) {
-              if (j > 0) {
-                var xDiff = s - seriesX[j - 1];
-                if (xDiff > 0) {
-                  gl.minXDiff = Math.min(xDiff, gl.minXDiff);
-                }
+            if (sX.length) {
+              if (sX.length === 1) {
+                // a small hack to prevent overlapping multiple bars when there is just 1 datapoint in bar series.
+                // fix #811
+                sX.push(gl.seriesX[gl.maxValsInArrayIndex][gl.seriesX[gl.maxValsInArrayIndex].length - 1]);
               }
-            });
-            if (gl.dataPoints === 1 || gl.minXDiff === Number.MAX_VALUE) {
-              // fixes apexcharts.js #1221
-              gl.minXDiff = 0.5;
+
+              // fix #983 (clone the array to avoid side effects)
+              var seriesX = sX.slice();
+              seriesX.sort(function (a, b) {
+                return a - b;
+              });
+              seriesX.forEach(function (s, j) {
+                if (j > 0) {
+                  var xDiff = s - seriesX[j - 1];
+                  if (xDiff > 0) {
+                    gl.minXDiff = Math.min(xDiff, gl.minXDiff);
+                  }
+                }
+              });
+              if (gl.dataPoints === 1 || gl.minXDiff === Number.MAX_VALUE) {
+                // fixes apexcharts.js #1221
+                gl.minXDiff = 0.5;
+              }
             }
           });
         }
@@ -19769,7 +19788,7 @@
         var labels = this.axesUtils.checkForReversedLabels(realIndex, w.globals.yAxisScale[realIndex].result.slice());
         if (w.config.yaxis[realIndex].labels.show) {
           var lY = w.globals.translateY + w.config.yaxis[realIndex].labels.offsetY;
-          if (w.globals.isBarHorizontal) lY = 0; else if (w.config.chart.type === 'heatmap') lY -= labelsDivider / 2;
+          if (w.globals.isBarHorizontal) lY = 0;else if (w.config.chart.type === 'heatmap') lY -= labelsDivider / 2;
           lY += parseInt(yaxisFontSize, 10) / 3;
           for (var i = tickAmount; i >= 0; i--) {
             var val = lbFormatter(labels[i], i, w);
@@ -22812,8 +22831,8 @@
         if (rectDim.width > 0 && rectDim.height > 0) {
           this.selectionRect.select(false).resize(false);
           this.selectionRect.select({
-            createRot: function createRot() { },
-            updateRot: function updateRot() { },
+            createRot: function createRot() {},
+            updateRot: function updateRot() {},
             createHandle: function createHandle(group, p, index, pointArr, handleName) {
               if (handleName === 'l' || handleName === 'r') return group.circle(8).css({
                 'stroke-width': 1,
@@ -22856,8 +22875,8 @@
               if (w.globals.isRangeBar) {
                 // rangebars put datetime data in y axis
                 x =
-                  // calculation: (selection left time - chart left time) / milliseconds per pixel = selection X value in pixels
-                  (w.config.chart.selection.xaxis.min - w.globals.yAxisScale[0].niceMin) / xyRatios.invertedYRatio;
+                // calculation: (selection left time - chart left time) / milliseconds per pixel = selection X value in pixels
+                (w.config.chart.selection.xaxis.min - w.globals.yAxisScale[0].niceMin) / xyRatios.invertedYRatio;
                 width = (w.config.chart.selection.xaxis.max - w.config.chart.selection.xaxis.min) / xyRatios.invertedYRatio;
               }
               var selectionRect = {
@@ -23415,11 +23434,11 @@
           closest = this.closestInMultiArray(transformedHoverX, transformedHoverY, seriesXValArr, seriesYValArr);
           capturedSeries = closest.index;
           j = closest.j;
-          if (capturedSeries !== null) {
+          if (capturedSeries !== null && w.globals.hasNullValues) {
             // initial push, it should be a little smaller than the 1st val
             seriesXValArr = w.globals.seriesXvalues[capturedSeries];
             closest = this.closestInArray(transformedHoverX, seriesXValArr);
-            j = closest.index;
+            j = closest.j;
           }
         }
         w.globals.capturedSeriesIndex = capturedSeries === null ? -1 : capturedSeries;
@@ -23434,49 +23453,6 @@
           j: w.globals.isBarHorizontal ? jHorz : j,
           hoverX: hoverX,
           hoverY: hoverY
-        };
-      }
-    }, {
-      key: "closestInMultiArray",
-      value: function closestInMultiArray(hoverX, hoverY, Xarrays, Yarrays) {
-        var w = this.w;
-        var activeIndex = 0;
-        var currIndex = null;
-        var j = -1;
-        if (w.globals.series.length > 1) {
-          activeIndex = this.getFirstActiveXArray(Xarrays);
-        } else {
-          currIndex = 0;
-        }
-        var currX = Xarrays[activeIndex][0];
-        var diffX = Math.abs(hoverX - currX);
-
-        // find nearest point on x-axis
-        Xarrays.forEach(function (arrX) {
-          arrX.forEach(function (x, iX) {
-            var newDiff = Math.abs(hoverX - x);
-            if (newDiff <= diffX) {
-              diffX = newDiff;
-              j = iX;
-            }
-          });
-        });
-        if (j !== -1) {
-          // find nearest graph on y-axis relevanted to nearest point on x-axis
-          var currY = Yarrays[activeIndex][j];
-          var diffY = Math.abs(hoverY - currY);
-          currIndex = activeIndex;
-          Yarrays.forEach(function (arrY, iAY) {
-            var newDiff = Math.abs(hoverY - arrY[j]);
-            if (newDiff <= diffY) {
-              diffY = newDiff;
-              currIndex = iAY;
-            }
-          });
-        }
-        return {
-          index: currIndex,
-          j: j
         };
       }
     }, {
@@ -23496,6 +23472,47 @@
         return activeIndex;
       }
     }, {
+      key: "closestInMultiArray",
+      value: function closestInMultiArray(hoverX, hoverY, Xarrays, Yarrays) {
+        var w = this.w;
+
+        // Determine which series are active (not collapsed)
+        var isActiveSeries = function isActiveSeries(seriesIndex) {
+          return w.globals.collapsedSeriesIndices.indexOf(seriesIndex) === -1 && w.globals.ancillaryCollapsedSeriesIndices.indexOf(seriesIndex) === -1;
+        };
+        var closestDist = Infinity;
+        var closestSeriesIndex = null;
+        var closestPointIndex = null;
+
+        // Iterate through all series and points to find the closest (x,y) to (hoverX, hoverY)
+        for (var i = 0; i < Xarrays.length; i++) {
+          if (!isActiveSeries(i)) {
+            continue;
+          }
+          var xArr = Xarrays[i];
+          var yArr = Yarrays[i];
+
+          // Ensure both xArr and yArr have equal lengths and valid data
+          var len = Math.min(xArr.length, yArr.length);
+          for (var j = 0; j < len; j++) {
+            var xVal = xArr[j];
+            var yVal = yArr[j];
+            var distX = hoverX - xVal;
+            var distY = hoverY - yVal;
+            var dist = Math.sqrt(distX * distX + distY * distY);
+            if (dist < closestDist) {
+              closestDist = dist;
+              closestSeriesIndex = i;
+              closestPointIndex = j;
+            }
+          }
+        }
+        return {
+          index: closestSeriesIndex,
+          j: closestPointIndex
+        };
+      }
+    }, {
       key: "closestInArray",
       value: function closestInArray(val, arr) {
         var curr = arr[0];
@@ -23509,7 +23526,7 @@
           }
         }
         return {
-          index: currIndex
+          j: currIndex
         };
       }
 
@@ -23579,10 +23596,18 @@
     }, {
       key: "getAllMarkers",
       value: function getAllMarkers() {
+        var _this = this;
+        var filterCollapsed = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
         // first get all marker parents. This parent class contains series-index
         // which helps to sort the markers as they are dynamic
         var markersWraps = this.w.globals.dom.baseEl.querySelectorAll('.apexcharts-series-markers-wrap');
         markersWraps = _toConsumableArray(markersWraps);
+        if (filterCollapsed) {
+          markersWraps = markersWraps.filter(function (m) {
+            var realIndex = Number(m.getAttribute('data:realIndex'));
+            return _this.w.globals.collapsedSeriesIndices.indexOf(realIndex) === -1;
+          });
+        }
         markersWraps.sort(function (a, b) {
           var indexA = Number(a.getAttribute('data:realIndex'));
           var indexB = Number(b.getAttribute('data:realIndex'));
@@ -23911,7 +23936,7 @@
       key: "DOMHandling",
       value: function DOMHandling(_ref4) {
         _ref4.i;
-        var t = _ref4.t,
+          var t = _ref4.t,
           j = _ref4.j,
           ttItems = _ref4.ttItems,
           values = _ref4.values,
@@ -24121,9 +24146,7 @@
         if (Array.isArray(fn) && fn[i]) {
           fn = fn[i];
         }
-
-        // override everything with a custom html tooltip and replace it
-        tooltipEl.innerHTML = fn({
+        var customTooltip = fn({
           ctx: this.ctx,
           series: w.globals.series,
           seriesIndex: i,
@@ -24132,6 +24155,12 @@
           y2: y2,
           w: w
         });
+        if (typeof customTooltip === 'string') {
+          tooltipEl.innerHTML = customTooltip;
+        } else if (customTooltip instanceof Element || typeof customTooltip.nodeName === 'string') {
+          tooltipEl.innerHTML = '';
+          tooltipEl.appendChild(customTooltip);
+        }
       }
     }]);
     return Labels;
@@ -24389,8 +24418,11 @@
           cx = pointsArr[activeSeries][j][0];
           cy = pointsArr[activeSeries][j][1];
         }
+        if (isNaN(cx)) {
+          return;
+        }
         var points = ttCtx.tooltipUtil.getAllMarkers();
-        if (points !== null) {
+        if (points.length) {
           for (var p = 0; p < w.globals.series.length; p++) {
             var pointArr = pointsArr[p];
             if (w.globals.comboCharts) {
@@ -24452,8 +24484,8 @@
             bcx = bcx - (barLen % 2 !== 0 ? bw / 2 : 0);
           }
           if (jBar &&
-            // fixes apexcharts.js#2354
-            isBoxOrCandle) {
+          // fixes apexcharts.js#2354
+          isBoxOrCandle) {
             bcx = bcx - bw / 2;
           }
         } else {
@@ -25738,6 +25770,13 @@
         if (shared === null) shared = this.tConfig.shared;
         var hasMarkers = this.tooltipUtil.hasMarkers(capturedSeries);
         var bars = this.tooltipUtil.getElBars();
+        var handlePoints = function handlePoints() {
+          if (w.globals.markers.largestSize > 0) {
+            ttCtx.marker.enlargePoints(j);
+          } else {
+            ttCtx.tooltipPosition.moveDynamicPointsOnHover(j);
+          }
+        };
         if (w.config.legend.tooltipHoverFormatter) {
           var legendFormatter = w.config.legend.tooltipHoverFormatter;
           var els = Array.from(this.legendLabels);
@@ -25782,11 +25821,7 @@
             shared: this.showOnIntersect ? false : this.tConfig.shared
           }));
           if (hasMarkers) {
-            if (w.globals.markers.largestSize > 0) {
-              ttCtx.marker.enlargePoints(j);
-            } else {
-              ttCtx.tooltipPosition.moveDynamicPointsOnHover(j);
-            }
+            handlePoints();
           } else if (this.tooltipUtil.hasBars()) {
             this.barSeriesHeight = this.tooltipUtil.getBarsHeight(bars);
             if (this.barSeriesHeight > 0) {
@@ -25796,7 +25831,11 @@
 
               // de-activate first
               this.deactivateHoverFilter();
-              this.tooltipPosition.moveStickyTooltipOverBars(j, capturedSeries);
+              ttCtx.tooltipPosition.moveStickyTooltipOverBars(j, capturedSeries);
+              var points = ttCtx.tooltipUtil.getAllMarkers(true);
+              if (points.length) {
+                handlePoints();
+              }
               for (var b = 0; b < paths.length; b++) {
                 graphics.pathMouseEnter(paths[b]);
               }
@@ -25986,8 +26025,8 @@
         var i = opts.i,
           j = opts.j,
           realIndex = opts.realIndex;
-        opts.columnGroupIndex;
-        var y = opts.y,
+          opts.columnGroupIndex;
+          var y = opts.y,
           bcx = opts.bcx,
           barWidth = opts.barWidth,
           barHeight = opts.barHeight,
@@ -26007,9 +26046,9 @@
         barHeight = Math.abs(barHeight);
         var vertical = w.config.plotOptions.bar.dataLabels.orientation === 'vertical';
         var _this$barCtx$barHelpe = this.barCtx.barHelpers.getZeroValueEncounters({
-          i: i,
-          j: j
-        }),
+            i: i,
+            j: j
+          }),
           zeroEncounters = _this$barCtx$barHelpe.zeroEncounters;
         bcx = bcx - strokeWidth / 2;
         var dataPointsDividedWidth = w.globals.gridWidth / w.globals.dataPoints;
@@ -26254,13 +26293,13 @@
           var position = w.config.plotOptions.bar.dataLabels.position;
           if (w.config.plotOptions.bar.dataLabels.orientation === 'vertical') {
             if (position === 'top') {
-              if (valIsNegative) dataLabelsConfig.textAnchor = 'end'; else dataLabelsConfig.textAnchor = 'start';
+              if (valIsNegative) dataLabelsConfig.textAnchor = 'end';else dataLabelsConfig.textAnchor = 'start';
             }
             if (position === 'center') {
               dataLabelsConfig.textAnchor = 'middle';
             }
             if (position === 'bottom') {
-              if (valIsNegative) dataLabelsConfig.textAnchor = 'end'; else dataLabelsConfig.textAnchor = 'start';
+              if (valIsNegative) dataLabelsConfig.textAnchor = 'end';else dataLabelsConfig.textAnchor = 'start';
             }
           }
           if (this.barCtx.isRangeBar && this.barCtx.barOptions.dataLabels.hideOverflowingLabels) {
@@ -26485,11 +26524,13 @@
         var fill = this.barCtx.ctx.fill;
         var fillColor = null;
         var seriesNumber = this.barCtx.barOptions.distributed ? j : i;
+        var useRangeColor = false;
         if (this.barCtx.barOptions.colors.ranges.length > 0) {
           var colorRange = this.barCtx.barOptions.colors.ranges;
           colorRange.map(function (range) {
             if (series[i][j] >= range.from && series[i][j] <= range.to) {
               fillColor = range.color;
+              useRangeColor = true;
             }
           });
         }
@@ -26501,7 +26542,10 @@
           fillConfig: (_w$config$series$i$da = w.config.series[i].data[j]) === null || _w$config$series$i$da === void 0 ? void 0 : _w$config$series$i$da.fill,
           fillType: (_w$config$series$i$da2 = w.config.series[i].data[j]) !== null && _w$config$series$i$da2 !== void 0 && (_w$config$series$i$da3 = _w$config$series$i$da2.fill) !== null && _w$config$series$i$da3 !== void 0 && _w$config$series$i$da3.type ? (_w$config$series$i$da4 = w.config.series[i].data[j]) === null || _w$config$series$i$da4 === void 0 ? void 0 : _w$config$series$i$da4.fill.type : Array.isArray(w.config.fill.type) ? w.config.fill.type[realIndex] : w.config.fill.type
         });
-        return pathFill;
+        return {
+          color: pathFill,
+          useRangeColor: useRangeColor
+        };
       }
     }, {
       key: "getStrokeWidth",
@@ -27161,8 +27205,9 @@
             }
             var pathFill = this.barHelpers.getPathFillColor(series, i, j, realIndex);
             if (this.isFunnel && this.barOptions.isFunnel3d && this.pathArr.length && j > 0) {
+              var _pathFill$color;
               var barShadow = this.barHelpers.drawBarShadow({
-                color: typeof pathFill === 'string' && (pathFill === null || pathFill === void 0 ? void 0 : pathFill.indexOf('url')) === -1 ? pathFill : Utils$1.hexToRgba(w.globals.colors[i]),
+                color: typeof pathFill.color === 'string' && ((_pathFill$color = pathFill.color) === null || _pathFill$color === void 0 ? void 0 : _pathFill$color.indexOf('url')) === -1 ? pathFill.color : Utils$1.hexToRgba(w.globals.colors[i]),
                 prevPaths: this.pathArr[this.pathArr.length - 1],
                 currPaths: paths
               });
@@ -27192,9 +27237,12 @@
               xArrj.push(x + barWidth / 2);
             }
             yArrj.push(y);
-            this.renderSeries({
+            this.renderSeries(_objectSpread2(_objectSpread2({
               realIndex: realIndex,
-              pathFill: pathFill,
+              pathFill: pathFill.color
+            }, pathFill.useRangeColor ? {
+              lineFill: pathFill.color
+            } : {}), {}, {
               j: j,
               i: i,
               columnGroupIndex: columnGroupIndex,
@@ -27212,7 +27260,7 @@
               elBarShadows: elBarShadows,
               visibleSeries: this.visibleI,
               type: 'bar'
-            });
+            }));
           }
 
           // push all x val arrays into main xArr
@@ -27455,9 +27503,9 @@
         } else {
           if (w.config.plotOptions.bar.hideZeroBarsWhenGrouped) {
             var _this$barHelpers$getZ = this.barHelpers.getZeroValueEncounters({
-              i: i,
-              j: j
-            }),
+                i: i,
+                j: j
+              }),
               nonZeroColumns = _this$barHelpers$getZ.nonZeroColumns,
               zeroEncounters = _this$barHelpers$getZ.zeroEncounters;
             if (nonZeroColumns > 0) {
@@ -27704,9 +27752,12 @@
             if (_this.barHelpers.arrBorderRadius[realIndex][j] === 'bottom' && w.globals.series[realIndex][j] > 0 || _this.barHelpers.arrBorderRadius[realIndex][j] === 'top' && w.globals.series[realIndex][j] < 0) {
               classes = flipClass;
             }
-            elSeries = _this.renderSeries({
+            elSeries = _this.renderSeries(_objectSpread2(_objectSpread2({
               realIndex: realIndex,
-              pathFill: pathFill,
+              pathFill: pathFill.color
+            }, pathFill.useRangeColor ? {
+              lineFill: pathFill.color
+            } : {}), {}, {
               j: j,
               i: i,
               columnGroupIndex: columnGroupIndex,
@@ -27724,7 +27775,7 @@
               type: 'bar',
               visibleSeries: columnGroupIndex,
               classes: classes
-            });
+            }));
           }
 
           // push all x val arrays into main xArr
@@ -28196,8 +28247,8 @@
       value: function drawVerticalBoxPaths(_ref) {
         var indexes = _ref.indexes,
           x = _ref.x;
-        _ref.y;
-        var xDivision = _ref.xDivision,
+          _ref.y;
+          var xDivision = _ref.xDivision,
           barWidth = _ref.barWidth,
           zeroH = _ref.zeroH,
           strokeWidth = _ref.strokeWidth;
@@ -28267,8 +28318,8 @@
       key: "drawHorizontalBoxPaths",
       value: function drawHorizontalBoxPaths(_ref2) {
         var indexes = _ref2.indexes;
-        _ref2.x;
-        var y = _ref2.y,
+          _ref2.x;
+          var y = _ref2.y,
           yDivision = _ref2.yDivision,
           barHeight = _ref2.barHeight,
           zeroW = _ref2.zeroW,
@@ -28560,7 +28611,8 @@
           var j = 0;
           for (var dIndex = 0; dIndex < w.globals.dataPoints; dIndex++) {
             // Recognize gaps and align values based on x axis
-            if (w.globals.seriesX.length) {
+
+            if (w.globals.seriesX.length && !w.globals.allSeriesHasEqualX) {
               if (w.globals.minX + w.globals.minXDiff * dIndex < w.globals.seriesX[i][j]) {
                 x1 = x1 + xDivision;
                 continue;
@@ -30402,11 +30454,10 @@
             y = paths.y;
             x = paths.x;
             var pathFill = this.barHelpers.getPathFillColor(series, i, j, realIndex);
-            var lineFill = w.globals.stroke.colors[realIndex];
             this.renderSeries({
               realIndex: realIndex,
-              pathFill: pathFill,
-              lineFill: lineFill,
+              pathFill: pathFill.color,
+              lineFill: pathFill.useRangeColor ? pathFill.color : w.globals.stroke.colors[realIndex],
               j: j,
               i: i,
               x: x,
@@ -31381,6 +31432,7 @@
         var pathState = 0;
         var segmentStartX;
         for (var j = 0; j < iterations; j++) {
+          if (series[i].length === 0) break;
           var isNull = typeof series[i][j + 1] === 'undefined' || series[i][j + 1] === null;
           if (w.globals.isXNumeric) {
             var sX = w.globals.seriesX[realIndex][j + 1];
@@ -31425,7 +31477,7 @@
           }
 
           // push current X
-          xArrj.push(x);
+          xArrj.push(series[i][j + 1] === null ? null : x);
 
           // push current Y that will be used as next series's bottom position
           if (isNull && (w.config.stroke.curve === 'smooth' || w.config.stroke.curve === 'monotoneCubic')) {
@@ -31545,8 +31597,8 @@
         var type = _ref5.type,
           series = _ref5.series,
           i = _ref5.i;
-        _ref5.realIndex;
-        var j = _ref5.j,
+          _ref5.realIndex;
+          var j = _ref5.j,
           x = _ref5.x,
           y = _ref5.y,
           xArrj = _ref5.xArrj,
@@ -31685,7 +31737,7 @@
                   areaPath = graphics.move(pX, pY);
 
                   // Check for single isolated point
-                  if (series[i][j + 1] === null) {
+                  if (series[i][j + 1] === null || typeof series[i][j + 1] === 'undefined') {
                     linePaths.push(linePath);
                     areaPaths.push(areaPath);
                     // Stay in pathState = 0;
@@ -31765,7 +31817,7 @@
                   areaPath = graphics.move(pX, pY);
 
                   // Check for single isolated point
-                  if (series[i][j + 1] === null) {
+                  if (series[i][j + 1] === null || typeof series[i][j + 1] === 'undefined') {
                     linePaths.push(linePath);
                     areaPaths.push(areaPath);
                     // Stay in pathState = 0
@@ -32912,6 +32964,12 @@
         var month = checkNextMonth.month;
         month = changeMonth(date, month);
 
+        // Check if date is greater than 31 and change month if it is
+        if (firstTickValue > 31) {
+          date = 1;
+          firstTickValue = date;
+        }
+
         // push the first tick in the array
         this.timeScaleArray.push({
           position: firstTickPosition,
@@ -33129,12 +33187,12 @@
         var equalLabelLengthFlag = false; // These labels got same length?
         var constantLabelWidth; // If true, what is the constant length to use
         if (arr.length > 0 &&
-          // check arr length
-          arr[0].value &&
-          // check arr[0] contains value
-          arr.every(function (lb) {
-            return lb.value.length === arr[0].value.length;
-          }) // check every arr label value is the same as the first one
+        // check arr length
+        arr[0].value &&
+        // check arr[0] contains value
+        arr.every(function (lb) {
+          return lb.value.length === arr[0].value.length;
+        }) // check every arr label value is the same as the first one
         ) {
           equalLabelLengthFlag = true; // These labels got same length
           constantLabelWidth = graphics.getTextRects(arr[0].value).width; // The constant label width to use
@@ -33143,8 +33201,8 @@
         var filteredArray = arr.map(function (item, index) {
           if (index > 0 && _this3.w.config.xaxis.labels.hideOverlappingLabels) {
             var prevLabelWidth = !equalLabelLengthFlag // if vary in label length
-              ? graphics.getTextRects(arr[lastDrawnIndex].value).width // get individual length
-              : constantLabelWidth; // else: use constant length
+            ? graphics.getTextRects(arr[lastDrawnIndex].value).width // get individual length
+            : constantLabelWidth; // else: use constant length
             var prevPos = arr[lastDrawnIndex].position;
             var pos = item.position;
             if (pos > prevPos + prevLabelWidth + 10) {
@@ -34404,7 +34462,7 @@
     }
   }
 
-  extend(Element, {
+  extend(Element$1, {
     draggable(enable = true) {
       const dragHandler = this.remember('_draggable') || new DragHandler(this);
       dragHandler.init(enable);
@@ -34423,7 +34481,7 @@
   * BUILT: Mon Jul 01 2024 15:04:42 GMT+0200 (Central European Summer Time)
   */
   function getMoseDownFunc$1(eventName, el, points, index = null) {
-    return function (ev) {
+    return function(ev) {
       ev.preventDefault();
       ev.stopPropagation();
       var x = ev.pageX || ev.touches[0].pageX;
@@ -34619,7 +34677,7 @@
     }
   };
   const getSelectFn$1 = (handleClass) => {
-    return function (enabled = true, options = {}) {
+    return function(enabled = true, options = {}) {
       if (typeof enabled === "object") {
         options = enabled;
         enabled = true;
@@ -34638,7 +34696,7 @@
       return this;
     };
   };
-  extend(Element, {
+  extend(Element$1, {
     select: getSelectFn$1(SelectHandler$1)
   });
   extend([Polygon, Polyline, Line$1], {
@@ -34666,7 +34724,7 @@
   * BUILT: Mon Jul 01 2024 15:04:42 GMT+0200 (Central European Summer Time)
   */
   function getMoseDownFunc(eventName, el, points, index = null) {
-    return function (ev) {
+    return function(ev) {
       ev.preventDefault();
       ev.stopPropagation();
       var x = ev.pageX || ev.touches[0].pageX;
@@ -34862,7 +34920,7 @@
     }
   }
   const getSelectFn = (handleClass) => {
-    return function (enabled = true, options = {}) {
+    return function(enabled = true, options = {}) {
       if (typeof enabled === "object") {
         options = enabled;
         enabled = true;
@@ -34881,7 +34939,7 @@
       return this;
     };
   };
-  extend(Element, {
+  extend(Element$1, {
     select: getSelectFn(SelectHandler)
   });
   extend([Polygon, Polyline, Line$1], {
@@ -35119,9 +35177,9 @@
       return angle;
     }
   }
-  extend(Element, {
+  extend(Element$1, {
     // Resize element with mouse
-    resize: function (enabled = true, options = {}) {
+    resize: function(enabled = true, options = {}) {
       if (typeof enabled === "object") {
         options = enabled;
         enabled = true;
@@ -35680,7 +35738,6 @@
         var updateSyncedCharts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
         var overwriteInitialConfig = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
         var w = this.w;
-        this.opts = options;
 
         // when called externally, clear some global variables
         // fixes apexcharts.js#1488
