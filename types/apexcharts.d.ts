@@ -27,6 +27,7 @@ declare class ApexCharts {
   ): Promise<void>
   appendData(data: any[], overwriteInitialSeries?: boolean): void
   toggleSeries(seriesName: string): any
+  highlightSeries(seriesName: string): any
   showSeries(seriesName: string): void
   hideSeries(seriesName: string): void
   resetSeries(): void
@@ -42,7 +43,7 @@ declare class ApexCharts {
   clearAnnotations(options?: any): void
   dataURI(options?: { scale?: number, width?: number }): Promise<{ imgURI: string } | { blob: Blob }>
   static exec(chartID: string, fn: string, ...args: Array<any>): any
-  static getChartByID(chartID: string): ApexCharts|undefined
+  static getChartByID(chartID: string): ApexCharts | undefined
   static initOnLoad(): void
   exports: {
     cleanup(): string
@@ -100,22 +101,22 @@ type ApexChart = {
   width?: string | number
   height?: string | number
   type?:
-    | 'line'
-    | 'area'
-    | 'bar'
-    | 'pie'
-    | 'donut'
-    | 'radialBar'
-    | 'scatter'
-    | 'bubble'
-    | 'heatmap'
-    | 'candlestick'
-    | 'boxPlot'
-    | 'radar'
-    | 'polarArea'
-    | 'rangeBar'
-    | 'rangeArea'
-    | 'treemap'
+  | 'line'
+  | 'area'
+  | 'bar'
+  | 'pie'
+  | 'donut'
+  | 'radialBar'
+  | 'scatter'
+  | 'bubble'
+  | 'heatmap'
+  | 'candlestick'
+  | 'boxPlot'
+  | 'radar'
+  | 'polarArea'
+  | 'rangeBar'
+  | 'rangeArea'
+  | 'treemap'
   foreColor?: string
   fontFamily?: string
   background?: string
@@ -150,6 +151,7 @@ type ApexChart = {
     enabled?: boolean
     autoScaleYaxis?: boolean
     target?: string
+    targets?: string[]
   }
   id?: string
   group?: string
@@ -163,6 +165,7 @@ type ApexChart = {
   }
   stacked?: boolean
   stackType?: 'normal' | '100%'
+  stackOnlyBar?: boolean;
   toolbar?: {
     show?: boolean
     offsetX?: number
@@ -189,7 +192,8 @@ type ApexChart = {
         columnDelimiter?: string
         headerCategory?: string
         headerValue?: string
-        dateFormatter?(timestamp?: number): any
+        categoryFormatter?(value?: number): any
+        valueFormatter?(value?: number): any
       },
       svg?: {
         filename?: undefined | string
@@ -197,6 +201,8 @@ type ApexChart = {
       png?: {
         filename?: undefined | string
       }
+      width?: number
+      scale?: number
     }
     autoSelected?: 'zoom' | 'selection' | 'pan'
   }
@@ -204,6 +210,7 @@ type ApexChart = {
     enabled?: boolean
     type?: 'x' | 'y' | 'xy'
     autoScaleYaxis?: boolean
+    allowMouseWheelZoom?: boolean
     zoomedArea?: {
       fill?: {
         color?: string
@@ -240,7 +247,6 @@ type ApexChart = {
   }
   animations?: {
     enabled?: boolean
-    easing?: 'linear' | 'easein' | 'easeout' | 'easeinout'
     speed?: number
     animateGradually?: {
       enabled?: boolean
@@ -254,23 +260,15 @@ type ApexChart = {
 }
 
 type ApexStates = {
-  normal?: {
-    filter?: {
-      type?: string
-      value?: number
-    }
-  }
   hover?: {
     filter?: {
       type?: string
-      value?: number
     }
   }
   active?: {
     allowMultipleDataPointsSelection?: boolean
     filter?: {
       type?: string
-      value?: number
     }
   }
 }
@@ -312,22 +310,33 @@ type ApexAxisChartSeries = {
   name?: string
   type?: string
   color?: string
+  group?: string
+  hidden?: boolean
+  zIndex?: number
   data:
-    | (number | null)[]
-    | {
-        x: any;
-        y: any;
-        fill?: ApexFill;
-        fillColor?: string;
-        strokeColor?: string;
-        meta?: any;
-        goals?: any;
-        barHeightOffset?: number;
-        columnWidthOffset?: number;
-      }[]
-    | [number, number | null][]
-    | [number, (number | null)[]][]
-    | number[][];
+  | (number | null)[]
+  | {
+    x: any;
+    y: any;
+    fill?: ApexFill;
+    fillColor?: string;
+    strokeColor?: string;
+    meta?: any;
+    goals?: {
+      name?: string,
+      value: number,
+      strokeHeight?: number;
+      strokeWidth?: number;
+      strokeColor?: string;
+      strokeDashArray?: number;
+      strokeLineCap?: 'butt' | 'square' | 'round'
+    }[];
+    barHeightOffset?: number;
+    columnWidthOffset?: number;
+  }[]
+  | [number, number | null][]
+  | [number, (number | null)[]][]
+  | number[][];
 }[]
 
 type ApexNonAxisChartSeries = number[]
@@ -338,9 +347,9 @@ type ApexNonAxisChartSeries = number[]
  */
 type ApexStroke = {
   show?: boolean
-  curve?: 'smooth' | 'straight' | 'stepline' | ('smooth' | 'straight' | 'stepline')[]
+  curve?: 'smooth' | 'straight' | 'stepline' | 'linestep' | 'monotoneCubic' | ('smooth' | 'straight' | 'stepline' | 'linestep' | 'monotoneCubic')[]
   lineCap?: 'butt' | 'square' | 'round'
-  colors?: string[]
+  colors?: any[] | string[]
   width?: number | number[]
   dashArray?: number | number[]
   fill?: ApexFill
@@ -432,7 +441,6 @@ type PointAnnotations = {
     shape?: string
     offsetX?: number
     offsetY?: number
-    radius?: number
     cssClass?: string
   }
   label?: AnnotationLabel
@@ -492,9 +500,9 @@ type ApexLocale = {
       zoomOut?: string
       pan?: string
       reset?: string
-			exportToSVG?: string
-			exportToPNG?: string
-			exportToCSV?: string
+      exportToSVG?: string
+      exportToPNG?: string
+      exportToCSV?: string
     }
   }
 }
@@ -504,19 +512,32 @@ type ApexLocale = {
  * See https://apexcharts.com/docs/options/plotoptions/bar/
  */
 type ApexPlotOptions = {
+  line?: {
+    isSlopeChart?: boolean
+    colors?: {
+      threshold?: number,
+      colorAboveThreshold?: string,
+      colorBelowThreshold?: string,
+    },
+  }
   area?: {
     fillTo?: 'origin' | 'end'
   }
   bar?: {
     horizontal?: boolean
-    columnWidth?: string
-    barHeight?: string
+    columnWidth?: string | number;
+    barHeight?: string | number;
     distributed?: boolean
     borderRadius?: number;
     borderRadiusApplication?: 'around' | 'end';
     borderRadiusWhenStacked?: 'all' | 'last';
+    hideZeroBarsWhenGrouped?: boolean
     rangeBarOverlap?: boolean
     rangeBarGroupRows?: boolean
+    isDumbbell?: boolean;
+    dumbbellColors?: string[][];
+    isFunnel?: boolean;
+    isFunnel3d?: boolean;
     colors?: {
       ranges?: {
         from?: number
@@ -553,8 +574,8 @@ type ApexPlotOptions = {
   }
   candlestick?: {
     colors?: {
-      upward?: string
-      downward?: string
+      upward?: string | string[]
+      downward?: string | string[]
     }
     wick?: {
       useFillColor?: boolean
@@ -562,8 +583,8 @@ type ApexPlotOptions = {
   }
   boxPlot?: {
     colors?: {
-      upper?: string,
-      lower?: string
+      upper?: string | string[]
+      lower?: string | string[]
     }
   }
   heatmap?: {
@@ -592,6 +613,8 @@ type ApexPlotOptions = {
     distributed?: boolean
     reverseNegativeShade?: boolean
     useFillColorAsStroke?: boolean
+    dataLabels?: { format?: 'scale' | 'truncate' }
+    borderRadius?: number
     colorScale?: {
       inverse?: boolean
       ranges?: {
@@ -733,7 +756,24 @@ type ApexPlotOptions = {
         formatter?(opts: any): string
       }
     }
+    barLabels?: {
+      enabled?: boolean
+      offsetX?: number
+      offsetY?: number
+      useSeriesColors?: boolean
+      fontFamily?: string
+      fontWeight?: string | number
+      fontSize?: string
+      formatter?: (barName: string, opts?: any) => string
+      onClick?: (barName: string, opts?: any) => void
+    }
   }
+}
+
+type ApexColorStop = {
+  offset: number
+  color: string
+  opacity: number
 }
 
 type ApexFill = {
@@ -749,7 +789,7 @@ type ApexFill = {
     opacityFrom?: number | number[]
     opacityTo?: number | number[]
     stops?: number[],
-    colorStops?: any[]
+    colorStops?: ApexColorStop[][] | ApexColorStop[]
   }
   image?: {
     src?: string | string[]
@@ -786,31 +826,26 @@ type ApexLegend = {
   offsetY?: number
   formatter?(legendName: string, opts?: any): string
   tooltipHoverFormatter?(legendName: string, opts?: any): string
-  textAnchor?: string
   customLegendItems?: string[]
+  clusterGroupedSeries?: boolean;
+  clusterGroupedSeriesOrientation?: string;
   labels?: {
     colors?: string | string[]
     useSeriesColors?: boolean
   }
   markers?: {
-    width?: number
-    height?: number
-    strokeColor?: string
+    size?: number
     strokeWidth?: number
     fillColors?: string[]
+    shape?: ApexMarkerShape
     offsetX?: number
     offsetY?: number
-    radius?: number
     customHTML?(): any
     onClick?(): void
   }
   itemMargin?: {
     horizontal?: number
     vertical?: number
-  }
-  containerMargin?: {
-    left?: number
-    top?: number
   }
   onItemClick?: {
     toggleDataSeries?: boolean
@@ -820,7 +855,9 @@ type ApexLegend = {
   }
 }
 
-type ApexMarkerShape = "circle" | "square" | "rect" | string[]
+type MarkerShapeOptions = "circle" | "square" | "rect" | "line" | 'cross' | 'plus' | 'star' | 'sparkle' | 'diamond' | 'triangle'
+
+type ApexMarkerShape = MarkerShapeOptions | MarkerShapeOptions[]
 
 type ApexDiscretePoint = {
   seriesIndex?: number
@@ -841,9 +878,6 @@ type ApexMarkers = {
   fillOpacity?: number | number[]
   discrete?: ApexDiscretePoint[]
   shape?: ApexMarkerShape
-  width?: number | number[]
-  height?: number | number[]
-  radius?: number
   offsetX?: number
   offsetY?: number
   showNullDataPoints?: boolean
@@ -896,7 +930,7 @@ type ApexDataLabels = {
     dropShadow?: ApexDropShadow
   }
   dropShadow?: ApexDropShadow
-  formatter?(val: string | number | number[], opts?: any): string | number
+  formatter?(val: string | number | number[], opts?: any): string | number | (string | string)[]
 }
 
 type ApexResponsive = {
@@ -906,7 +940,7 @@ type ApexResponsive = {
 
 type ApexTooltipY = {
   title?: {
-    formatter?(seriesName: string): string
+    formatter?(seriesName: string, opts?: any): string
   }
   formatter?(val: number, opts?: any): string
 }
@@ -926,6 +960,7 @@ type ApexTooltip = {
   fillSeriesColor?: boolean
   theme?: string
   cssClass?: string
+  hideEmptySeries?: boolean
   style?: {
     fontSize?: string
     fontFamily?: string
@@ -988,7 +1023,7 @@ type ApexXAxis = {
     offsetX?: number
     offsetY?: number
     format?: string
-    formatter?(value: string, timestamp?: number, opts?:any): string | string[]
+    formatter?(value: string, timestamp?: number, opts?: any): string | string[]
     datetimeUTC?: boolean
     datetimeFormatter?: {
       year?: string
@@ -1000,14 +1035,14 @@ type ApexXAxis = {
     }
   }
   group?: {
-      groups?: { title: string, cols: number }[],
-      style?:  {
-        colors?: string | string[]
-        fontSize?: string
-        fontFamily?: string
-        fontWeight?: string | number
-        cssClass?: string
-      }
+    groups?: { title: string, cols: number }[],
+    style?: {
+      colors?: string | string[]
+      fontSize?: string
+      fontFamily?: string
+      fontWeight?: string | number
+      cssClass?: string
+    }
   }
   axisBorder?: {
     show?: boolean
@@ -1026,6 +1061,7 @@ type ApexXAxis = {
   }
   tickPlacement?: string
   tickAmount?: number | 'dataPoints'
+  stepSize?: number
   min?: number
   max?: number
   range?: number
@@ -1087,12 +1123,13 @@ type ApexYAxis = {
   show?: boolean
   showAlways?: boolean
   showForNullSeries?: boolean
-  seriesName?: string
+  seriesName?: string | string[]
   opposite?: boolean
   reversed?: boolean
   logarithmic?: boolean,
   logBase?: number,
   tickAmount?: number
+  stepSize?: number
   forceNiceScale?: boolean
   min?: number | ((min: number) => number)
   max?: number | ((max: number) => number)
@@ -1100,6 +1137,7 @@ type ApexYAxis = {
   decimalsInFloat?: number
   labels?: {
     show?: boolean
+    showDuplicates?: boolean
     minWidth?: number
     maxWidth?: number
     offsetX?: number

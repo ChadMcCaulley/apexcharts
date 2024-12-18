@@ -50,7 +50,7 @@ export default class ApexCharts {
     // main method
     return new Promise((resolve, reject) => {
       // only draw chart, if element found
-      if (this.el !== null) {
+      if (Utils.elementExists(this.el)) {
         if (typeof Apex._chartInstances === 'undefined') {
           Apex._chartInstances = []
         }
@@ -58,7 +58,7 @@ export default class ApexCharts {
           Apex._chartInstances.push({
             id: this.w.globals.chartID,
             group: this.w.config.chart.group,
-            chart: this
+            chart: this,
           })
         }
 
@@ -73,25 +73,28 @@ export default class ApexCharts {
         window.addEventListener('resize', this.windowResizeHandler)
         addResizeListener(this.el.parentNode, this.parentResizeHandler)
 
-        // Add CSS if not already added
-        if (!this.css) {
-          let rootNode = this.el.getRootNode && this.el.getRootNode()
-          let inShadowRoot = Utils.is('ShadowRoot', rootNode)
-          let doc = this.el.ownerDocument
-          let globalCSS = doc.getElementById('apexcharts-css')
+        let rootNode = this.el.getRootNode && this.el.getRootNode()
+        let inShadowRoot = Utils.is('ShadowRoot', rootNode)
+        let doc = this.el.ownerDocument
+        let css = inShadowRoot
+          ? rootNode.getElementById('apexcharts-css')
+          : doc.getElementById('apexcharts-css')
 
-          if (inShadowRoot || !globalCSS) {
-            this.css = document.createElement('style')
-            this.css.id = 'apexcharts-css'
-            this.css.textContent = apexCSS
+        if (!css) {
+          css = document.createElement('style')
+          css.id = 'apexcharts-css'
+          css.textContent = apexCSS
+          const nonce = this.opts.chart?.nonce || this.w.config.chart.nonce
+          if (nonce) {
+            css.setAttribute('nonce', nonce)
+          }
 
-            if (inShadowRoot) {
-              // We are in Shadow DOM, add to shadow root
-              rootNode.prepend(this.css)
-            } else {
-              // Add to <head> of element's document
-              doc.head.appendChild(this.css)
-            }
+          if (inShadowRoot) {
+            // We are in Shadow DOM, add to shadow root
+            rootNode.prepend(css)
+          } else {
+            // Add to <head> of element's document
+            doc.head.appendChild(css)
           }
         }
 
@@ -126,16 +129,17 @@ export default class ApexCharts {
     gl.noData = false
     gl.animationEnded = false
 
+    if (!Utils.elementExists(this.el)) {
+      gl.animationEnded = true
+      this.destroy()
+      return null
+    }
+
     this.responsive.checkResponsiveConfig(opts)
 
     if (w.config.xaxis.convertedCatToNumeric) {
       const defaults = new Defaults(w.config)
       defaults.convertCatToNumericXaxis(w.config, this.ctx)
-    }
-
-    if (this.el === null) {
-      gl.animationEnded = true
-      return null
     }
 
     this.core.setupElements()
@@ -151,20 +155,32 @@ export default class ApexCharts {
       return null
     }
 
-    const combo = CoreUtils.checkComboSeries(ser)
+    let series = ser
+    ser.forEach((s, realIndex) => {
+      if (s.hidden) {
+        series = this.legend.legendHelpers.getSeriesAfterCollapsing({
+          realIndex,
+        })
+      }
+    })
+
+    const combo = CoreUtils.checkComboSeries(series, w.config.chart.type)
     gl.comboCharts = combo.comboCharts
     gl.comboBarCount = combo.comboBarCount
 
-    const allSeriesAreEmpty = ser.every((s) => s.data && s.data.length === 0)
+    const allSeriesAreEmpty = series.every((s) => s.data && s.data.length === 0)
 
-    if (ser.length === 0 || allSeriesAreEmpty) {
+    if (
+      series.length === 0 ||
+      (allSeriesAreEmpty && gl.collapsedSeries.length < 1)
+    ) {
       this.series.handleNoData()
     }
 
     this.events.setupEventHandlers()
 
     // Handle the data inputted by user and set some of the global variables (for eg, if data is datetime / numeric / category). Don't calculate the range / min / max at this time
-    this.data.parseData(ser)
+    this.data.parseData(series)
 
     // this is a good time to set theme colors first
     this.theme.init()
@@ -216,7 +232,7 @@ export default class ApexCharts {
 
     this.grid.createGridMask()
 
-    const elGraph = this.core.plotChartType(ser, xyRatios)
+    const elGraph = this.core.plotChartType(series, xyRatios)
 
     const dataLabels = new DataLabels(this)
     dataLabels.bringForward()
@@ -232,15 +248,14 @@ export default class ApexCharts {
         left: w.globals.translateX,
         top: w.globals.translateY,
         width: w.globals.gridWidth,
-        height: w.globals.gridHeight
-      }
+        height: w.globals.gridHeight,
+      },
     }
 
     return {
       elGraph,
       xyRatios,
-      elInner: w.globals.dom.elGraphical,
-      dimensions: dim
+      dimensions: dim,
     }
   }
 
@@ -265,9 +280,11 @@ export default class ApexCharts {
       me.annotations.drawImageAnnos()
       me.annotations.drawTextAnnos()
 
-      if (w.config.grid.position === 'back' && elgrid) {
-        w.globals.dom.elGraphical.add(elgrid.el)
-        if (elgrid && elgrid.elGridBorders && elgrid.elGridBorders.node) {
+      if (w.config.grid.position === 'back') {
+        if (elgrid) {
+          w.globals.dom.elGraphical.add(elgrid.el)
+        }
+        if (elgrid?.elGridBorders?.node) {
           w.globals.dom.elGraphical.add(elgrid.elGridBorders)
         }
       }
@@ -280,9 +297,11 @@ export default class ApexCharts {
         w.globals.dom.elGraphical.add(graphData.elGraph)
       }
 
-      if (w.config.grid.position === 'front' && elgrid) {
-        w.globals.dom.elGraphical.add(elgrid.el)
-        if (elgrid && elgrid.elGridBorders && elgrid.elGridBorders.node) {
+      if (w.config.grid.position === 'front') {
+        if (elgrid) {
+          w.globals.dom.elGraphical.add(elgrid.el)
+        }
+        if (elgrid?.elGridBorders?.node) {
           w.globals.dom.elGraphical.add(elgrid.elGridBorders)
         }
       }
@@ -312,7 +331,6 @@ export default class ApexCharts {
         })
       }
 
-      w.globals.dom.Paper.add(w.globals.dom.elAnnotations)
       me.annotations.drawAxesAnnotations()
 
       if (!w.globals.noData) {
@@ -333,7 +351,7 @@ export default class ApexCharts {
             (w.config.chart.pan && w.config.chart.pan.enabled)
           ) {
             me.zoomPanSelection.init({
-              xyRatios: graphData.xyRatios
+              xyRatios: graphData.xyRatios,
             })
           }
         } else {
@@ -344,7 +362,7 @@ export default class ApexCharts {
             'zoomout',
             'selection',
             'pan',
-            'reset'
+            'reset',
           ]
           toolsArr.forEach((t) => {
             tools[t] = false
@@ -558,6 +576,8 @@ export default class ApexCharts {
 
   static getChartByID(id) {
     const chartId = Utils.escapeString(id)
+    if (!Apex._chartInstances) return undefined
+
     const c = Apex._chartInstances.filter((ch) => ch.id === chartId)[0]
     return c && c.chart
   }
@@ -623,6 +643,14 @@ export default class ApexCharts {
 
   hideSeries(seriesName) {
     this.series.hideSeries(seriesName)
+  }
+
+  highlightSeries(seriesName) {
+    this.series.highlightSeries(seriesName)
+  }
+
+  isSeriesHidden(seriesName) {
+    this.series.isSeriesHidden(seriesName)
   }
 
   resetSeries(shouldUpdateChart = true, shouldResetZoom = true) {

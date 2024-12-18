@@ -8,6 +8,7 @@ tests/e2e/diffs
 .nyc_output
 .vscode
 bundle-analysis.html
+/nbproject/private/
 /.vs/VSWorkspaceState.json
 /.vs/slnx.sqlite
 /.vs/apexcharts_2/v16/.suo

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Line, Column &amp; Area</title>
+    <title>Line &amp; Column</title>
 
     <link href="../../assets/styles.css" rel="stylesheet" />
 
@@ -33,12 +33,12 @@
     </script>
 
     
-    <script src="https://cdn.jsdelivr.net/npm/react@16.12/umd/react.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/react-dom@16.12/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prop-types@15.7.2/prop-types.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
     <script src="../../../dist/apexcharts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/react-apexcharts@1.3.6/dist/react-apexcharts.iife.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-apexcharts@1.7.0/dist/react-apexcharts.iife.min.js"></script>
     
 
     <script>
@@ -60,16 +60,13 @@
 
     <div id="html">
       &lt;div id=&quot;chart&quot;&gt;
-  &lt;ReactApexChart options={this.state.options} series={this.state.series} type=&quot;line&quot; height={350} /&gt;
+  &lt;ReactApexChart options={state.options} series={state.series} type=&quot;line&quot; height={350} /&gt;
 &lt;/div&gt;
     </div>
 
     <script type="text/babel">
-      class ApexChart extends React.Component {
-        constructor(props) {
-          super(props);
-
-          this.state = {
+      const ApexChart = () => {
+        const [state, setState] = React.useState({
           
             series: [{
               name: 'Website Blog',
@@ -96,9 +93,6 @@
                 enabledOnSeries: [1]
               },
               labels: ['01 Jan 2001', '02 Jan 2001', '03 Jan 2001', '04 Jan 2001', '05 Jan 2001', '06 Jan 2001', '07 Jan 2001', '08 Jan 2001', '09 Jan 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'],
-              xaxis: {
-                type: 'datetime'
-              },
               yaxis: [{
                 title: {
                   text: 'Website Blog',
@@ -113,25 +107,22 @@
             },
           
           
-          };
-        }
+        });
 
-      
+        
 
-        render() {
-          return (
-            <div>
-              <div id="chart">
-                <ReactApexChart options={this.state.options} series={this.state.series} type="line" height={350} />
+        return (
+          <div>
+            <div id="chart">
+                <ReactApexChart options={state.options} series={state.series} type="line" height={350} />
               </div>
-              <div id="html-dist"></div>
-            </div>
-          );
-        }
+            <div id="html-dist"></div>
+          </div>
+        );
       }
 
       const domContainer = document.querySelector('#app');
-      ReactDOM.render(React.createElement(ApexChart), domContainer);
+      ReactDOM.render(<ApexChart />, domContainer);
     </script>
 
     
