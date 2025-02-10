@@ -107,9 +107,7 @@ export default class Core {
     gl.dom.elLegendWrap = document.createElement('div')
     gl.dom.elLegendWrap.classList.add('apexcharts-legend')
 
-    gl.dom.elLegendWrap.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml')
-    gl.dom.elLegendForeign.appendChild(gl.dom.elLegendWrap)
-
+    gl.dom.elWrap.appendChild(gl.dom.elLegendWrap)
     gl.dom.Paper.node.appendChild(gl.dom.elLegendForeign)
 
     gl.dom.elGraphical = gl.dom.Paper.group().attr({
@@ -561,7 +559,7 @@ export default class Core {
   }
 
   setupBrushHandler() {
-    const { w } = this
+    const { ctx, w } = this
 
     if (!w.config.chart.brush.enabled) return
 
@@ -570,7 +568,7 @@ export default class Core {
         ? w.config.chart.brush.targets
         : [w.config.chart.brush.target]
       targets.forEach((target) => {
-        const targetChart = ApexCharts.getChartByID(target)
+        const targetChart = ctx.constructor.getChartByID(target)
         targetChart.w.globals.brushSource = this.ctx
 
         if (typeof targetChart.w.config.chart.events.zoomed !== 'function') {
@@ -585,7 +583,7 @@ export default class Core {
 
       w.config.chart.events.selection = (chart, e) => {
         targets.forEach((target) => {
-          const targetChart = ApexCharts.getChartByID(target)
+          const targetChart = ctx.constructor.getChartByID(target)
           targetChart.ctx.updateHelpers._updateOptions(
             {
               xaxis: {
