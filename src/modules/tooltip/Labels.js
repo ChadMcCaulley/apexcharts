@@ -309,7 +309,11 @@ export default class Labels {
         pColor = w.config.tooltip.marker.fillColors[t]
       }
 
-      ttItemsChildren[0].style.backgroundColor = pColor
+      if (w.config.tooltip.fillSeriesColor) {
+        ttItemsChildren[0].style.backgroundColor = pColor
+      } else {
+        ttItemsChildren[0].style.color = pColor
+      }
     }
 
     if (!w.config.tooltip.marker.show) {
@@ -325,7 +329,7 @@ export default class Labels {
 
     if (goalVals.length && w.globals.seriesGoals[t]) {
       const createGoalsHtml = () => {
-        let gLabels = '<div >'
+        let gLabels = '<div>'
         let gVals = '<div>'
         goalVals.forEach((goal, gi) => {
           gLabels += ` <div style="display: flex"><span class="apexcharts-tooltip-marker" style="background-color: ${goal.attrs.strokeColor}; height: 3px; border-radius: 0; top: 5px;"></span> ${goal.attrs.name}</div>`
@@ -540,7 +544,7 @@ export default class Labels {
       typeof customTooltip.nodeName === 'string'
     ) {
       tooltipEl.innerHTML = ''
-      tooltipEl.appendChild(customTooltip)
+      tooltipEl.appendChild(customTooltip.cloneNode(true))
     }
   }
 }
