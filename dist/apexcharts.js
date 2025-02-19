@@ -1,5 +1,5 @@
 /*!
- * ApexCharts v4.2.1
+ * ApexCharts v4.2.2
  * (c) 2018-2025 ApexCharts
  * Released under the MIT License.
  */
@@ -21263,7 +21263,7 @@
           // was to remove the division by seriesLen.
           barWidth = xDivision * parseInt(cnf.plotOptions.bar.columnWidth, 10) / 100;
           var maxColumnWidth = cnf.plotOptions.bar.columnMaxWidth;
-          if (!Number.isNaN(maxColumnWidth)) barWidth = Math.min(barWidth, maxColumnWidth);
+          if (maxColumnWidth !== null && !Number.isNaN(maxColumnWidth)) barWidth = Math.min(barWidth, maxColumnWidth);
           if (barWidth < 1) {
             barWidth = 1;
           }
@@ -27830,7 +27830,7 @@
             barWidth *= parseInt(userColumnWidth, 10) / 100;
           }
           var columnMaxWidth = w.config.plotOptions.bar.columnMaxWidth;
-          if (!Number.isNaN(columnMaxWidth)) barWidth = Math.min(barWidth, columnMaxWidth);
+          if (maxColumnWidth !== null && !Number.isNaN(columnMaxWidth)) barWidth = Math.min(barWidth, columnMaxWidth);
           if (this.isReversed) {
             zeroH = this.baseLineY[translationsIndex];
           } else {
