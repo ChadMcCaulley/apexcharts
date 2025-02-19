@@ -418,6 +418,7 @@ export default class Options {
         bar: {
           horizontal: false,
           columnWidth: '70%', // should be in percent 0 - 100
+          columnMaxWidth: null,
           barHeight: '70%', // should be in percent 0 - 100
           distributed: false,
           borderRadius: 0,

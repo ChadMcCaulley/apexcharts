@@ -1,6 +1,6 @@
 /*!
- * ApexCharts v4.2.0
- * (c) 2018-2024 ApexCharts
+ * ApexCharts v4.2.1
+ * (c) 2018-2025 ApexCharts
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -12352,6 +12352,7 @@
               horizontal: false,
               columnWidth: '70%',
               // should be in percent 0 - 100
+              columnMaxWidth: null,
               barHeight: '70%',
               // should be in percent 0 - 100
               distributed: false,
@@ -21261,6 +21262,8 @@
           // https://github.com/apexcharts/apexcharts.js/issues/4178
           // was to remove the division by seriesLen.
           barWidth = xDivision * parseInt(cnf.plotOptions.bar.columnWidth, 10) / 100;
+          var maxColumnWidth = cnf.plotOptions.bar.columnMaxWidth;
+          if (!Number.isNaN(maxColumnWidth)) barWidth = Math.min(barWidth, maxColumnWidth);
           if (barWidth < 1) {
             barWidth = 1;
           }
@@ -26434,6 +26437,7 @@
         if (w.config.plotOptions.bar.rangeBarGroupRows) {
           seriesLen = 1;
         }
+        var columnWidth = columnWidth;
         if (this.barCtx.isHorizontal) {
           // height divided into equal parts
           yDivision = w.globals.gridHeight / dataPoints;
@@ -26457,20 +26461,18 @@
           if (w.config.xaxis.convertedCatToNumeric) {
             xDivision = w.globals.gridWidth / w.globals.dataPoints;
           }
-          barWidth = xDivision / seriesLen * parseInt(this.barCtx.barOptions.columnWidth, 10) / 100;
+          barWidth = xDivision / seriesLen * parseInt(columnWidth, 10) / 100;
           if (w.globals.isXNumeric) {
             // max barwidth should be equal to minXDiff to avoid overlap
             var xRatio = this.barCtx.xRatio;
             if (w.globals.minXDiff && w.globals.minXDiff !== 0.5 && w.globals.minXDiff / xRatio > 0) {
               xDivision = w.globals.minXDiff / xRatio;
             }
-            barWidth = xDivision / seriesLen * parseInt(this.barCtx.barOptions.columnWidth, 10) / 100;
-            if (barWidth < 1) {
-              barWidth = 1;
-            }
+            barWidth = xDivision / seriesLen * parseInt(columnWidth, 10) / 100;
+            if (barWidth < 1) barWidth = 1;
           }
-          if (String(this.barCtx.barOptions.columnWidth).indexOf('%') === -1) {
-            barWidth = parseInt(this.barCtx.barOptions.columnWidth, 10);
+          if (String(columnWidth).indexOf('%') === -1) {
+            barWidth = parseInt(columnWidth, 10);
           }
           zeroH = w.globals.gridHeight - this.barCtx.baseLineY[this.barCtx.translationsIndex] - (this.barCtx.isReversed ? w.globals.gridHeight : 0) + (this.barCtx.isReversed ? this.barCtx.baseLineY[this.barCtx.translationsIndex] * 2 : 0);
           x = w.globals.padHorizontal + (xDivision - barWidth * this.barCtx.seriesLen) / 2;
@@ -27827,6 +27829,8 @@
           } else {
             barWidth *= parseInt(userColumnWidth, 10) / 100;
           }
+          var columnMaxWidth = w.config.plotOptions.bar.columnMaxWidth;
+          if (!Number.isNaN(columnMaxWidth)) barWidth = Math.min(barWidth, columnMaxWidth);
           if (this.isReversed) {
             zeroH = this.baseLineY[translationsIndex];
           } else {

@@ -68,9 +68,10 @@ export default class DimGrid {
       // They were the same, but the solution to
       // https://github.com/apexcharts/apexcharts.js/issues/4178
       // was to remove the division by seriesLen.
-      barWidth =
-        (xDivision * parseInt(cnf.plotOptions.bar.columnWidth, 10)) / 100
+      barWidth = (xDivision * parseInt(cnf.plotOptions.bar.columnWidth, 10)) / 100
 
+      const maxColumnWidth = cnf.plotOptions.bar.columnMaxWidth
+      if (!Number.isNaN(maxColumnWidth)) barWidth = Math.min(barWidth, maxColumnWidth)
       if (barWidth < 1) {
         barWidth = 1
       }

@@ -526,6 +526,7 @@ type ApexPlotOptions = {
   bar?: {
     horizontal?: boolean
     columnWidth?: string | number;
+    columnMaxWidth?: number;
     barHeight?: string | number;
     distributed?: boolean
     borderRadius?: number;

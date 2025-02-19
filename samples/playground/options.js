@@ -2270,6 +2270,11 @@ export const optionsPattern = {
               type: String,
               default: '70%',
             },
+            columnMaxWidth: {
+              title: "In column charts, columnMaxWidth is the max width of each column regardless of of available width.",
+              type: Number,
+              default: null,
+            },
             barHeight: {
               title:
                 "In horizontal bar charts, barHeight is the percentage of the available height in the grid-rect. Accepts '0%' to '100%'.",

@@ -65,6 +65,7 @@ export default class Helpers {
       seriesLen = 1
     }
 
+    const columnWidth = columnWidth
     if (this.barCtx.isHorizontal) {
       // height divided into equal parts
       yDivision = w.globals.gridHeight / dataPoints
@@ -98,10 +99,7 @@ export default class Helpers {
       if (w.config.xaxis.convertedCatToNumeric) {
         xDivision = w.globals.gridWidth / w.globals.dataPoints
       }
-      barWidth =
-        ((xDivision / seriesLen) *
-          parseInt(this.barCtx.barOptions.columnWidth, 10)) /
-        100
+      barWidth = ((xDivision / seriesLen) * parseInt(columnWidth, 10)) / 100
 
       if (w.globals.isXNumeric) {
         // max barwidth should be equal to minXDiff to avoid overlap
@@ -115,17 +113,12 @@ export default class Helpers {
           xDivision = w.globals.minXDiff / xRatio
         }
 
-        barWidth =
-          ((xDivision / seriesLen) *
-            parseInt(this.barCtx.barOptions.columnWidth, 10)) /
-          100
+        barWidth = ((xDivision / seriesLen) * parseInt(columnWidth, 10)) / 100
 
-        if (barWidth < 1) {
-          barWidth = 1
-        }
+        if (barWidth < 1) barWidth = 1
       }
-      if (String(this.barCtx.barOptions.columnWidth).indexOf('%') === -1) {
-        barWidth = parseInt(this.barCtx.barOptions.columnWidth, 10)
+      if (String(columnWidth).indexOf('%') === -1) {
+        barWidth = parseInt(columnWidth, 10)
       }
 
       zeroH =
