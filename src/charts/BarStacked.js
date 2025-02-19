@@ -271,7 +271,8 @@ class BarStacked extends Bar {
       }
 
       const columnMaxWidth = w.config.plotOptions.bar.columnMaxWidth
-      if (!Number.isNaN(columnMaxWidth)) barWidth = Math.min(barWidth, columnMaxWidth);
+      if (maxColumnWidth !== null && !Number.isNaN(columnMaxWidth))
+        barWidth = Math.min(barWidth, columnMaxWidth)
 
       if (this.isReversed) {
         zeroH = this.baseLineY[translationsIndex]
